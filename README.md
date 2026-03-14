@@ -1,0 +1,1 @@
+Este proyecto consiste en el desarrollo de una aplicación web para la gestión de reservas de casas rurales, orientada tanto a propietarios como a clientes interesados en alquilar este tipo de alojamientos.
