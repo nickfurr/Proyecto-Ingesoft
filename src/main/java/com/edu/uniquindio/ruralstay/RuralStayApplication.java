@@ -1,4 +1,4 @@
-package com.edu.uniquindio.RuralStay;
+package com.edu.uniquindio.ruralstay;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
