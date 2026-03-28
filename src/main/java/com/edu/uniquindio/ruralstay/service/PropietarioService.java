@@ -16,12 +16,17 @@ public class PropietarioService {
     public PropietarioService(PropietarioRepository propietarioRepository) {
         this.propietarioRepository = propietarioRepository;
     }
+
     public List<Propietario> listarTodos() {
         return propietarioRepository.findAll();
+
     }
-    public Optional<Propietario> buscarPorId (Long id) {
+
+    public Optional<Propietario> buscrPorId(Long id) {
+
         return propietarioRepository.findById(id);
     }
+
     public Propietario guardar(Propietario propietario) {
         return propietarioRepository.save(propietario);
     }
