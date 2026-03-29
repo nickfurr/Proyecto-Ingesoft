@@ -17,7 +17,8 @@ public class PaqueteAlquilerService {
     private final PaqueteAlquilerRepository paqueteAlquilerRepository;
     private final PropietarioRepository propietarioRepository;
 
-    public PaqueteAlquilerService(PaqueteAlquilerRepository paqueteAlquilerRepository, PropietarioRepository propietarioRepository) {
+    public PaqueteAlquilerService(PaqueteAlquilerRepository paqueteAlquilerRepository,
+            PropietarioRepository propietarioRepository) {
         this.paqueteAlquilerRepository = paqueteAlquilerRepository;
         this.propietarioRepository = propietarioRepository;
     }
@@ -41,8 +42,7 @@ public class PaqueteAlquilerService {
     public List<HistoricoPaqueteDTO> obtenerHistorico(
             Long propietarioId,
             LocalDate fechaInicio,
-            LocalDate fechaFin
-    ) {
+            LocalDate fechaFin) {
 
         if (propietarioId == null) {
             throw new RuntimeException("Propietario inválido");
@@ -53,7 +53,6 @@ public class PaqueteAlquilerService {
         }
 
         return paqueteAlquilerRepository.obtenerHistorico(
-                propietarioId, fechaInicio, fechaFin
-        );
+                propietarioId, fechaInicio, fechaFin);
     }
 }
