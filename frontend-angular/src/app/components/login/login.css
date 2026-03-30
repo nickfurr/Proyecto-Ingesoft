@@ -1,0 +1,33 @@
+.login-page {
+  min-height: 100vh;
+  padding: 10px 10px 10px 10px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 18px;
+}
+
+.card-body {
+  border-radius: 18px;
+}
+
+.nav-pills .nav-link {
+  border-radius: 10px;
+}
+.bg-custom {
+  background-image: url('/assets/images/fondo-casa.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  min-height: 100vh;
+  width: 100%;
+}
+.bg-custom::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
