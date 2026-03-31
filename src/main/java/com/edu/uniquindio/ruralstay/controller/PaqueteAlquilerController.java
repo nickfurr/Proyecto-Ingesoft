@@ -1,5 +1,6 @@
 package com.edu.uniquindio.ruralstay.controller;
 
+import com.edu.uniquindio.ruralstay.dto.PaqueteAlquilerDTO;
 import com.edu.uniquindio.ruralstay.entity.PaqueteAlquiler;
 import com.edu.uniquindio.ruralstay.service.PaqueteAlquilerService;
 import org.springframework.web.bind.annotation.*;

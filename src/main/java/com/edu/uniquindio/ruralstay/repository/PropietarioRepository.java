@@ -17,4 +17,6 @@ public interface PropietarioRepository extends JpaRepository<Propietario, Long> 
     Optional<CasaRural> buscarCasaDePropietario(
             @Param("casaId") Long casaId,
             @Param("propietarioId") Long propietarioId);
+
+    Optional<Propietario> findByEmail(String email);
 }

@@ -1,0 +1,153 @@
+<div class="app">
+  <aside class="sidebar">
+    <div class="profile-block">
+      <div class="avatar-ring">
+        <div class="avatar-inner">CM</div>
+      </div>
+      <p class="prop-name">Carlos Medina Torres</p>
+      <span class="prop-badge">Propietario</span>
+    </div>
+
+    <button class="nav-item" [class.active]="activePanel === 'info'" (click)="showPanel('info')">
+      Mi información
+    </button>
+
+    <button class="nav-item" [class.active]="activePanel === 'casas'" (click)="showPanel('casas')">
+      Mis casas
+    </button>
+
+    <button class="nav-item" [class.active]="activePanel === 'historico'" (click)="showPanel('historico')">
+      Histórico de paquetes
+    </button>
+
+    <div class="btn-add">
+      <button class="btn-primary btn-casa">Nueva casa</button>
+      <button class="btn-primary btn-paquete">Nuevo paquete</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">{{ panelTitle }}</div>
+        <div class="topbar-sub">{{ panelSub }}</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      @if (activePanel === 'info') {
+        <div class="panel active">
+          <div>
+            <div class="section-label">Datos personales</div>
+            <div class="info-grid">
+              <div class="info-card"><div class="label">Nombre completo</div><div class="value">Carlos Medina Torres</div></div>
+              <div class="info-card"><div class="label">Teléfono</div><div class="value">+57 300 555 0192</div></div>
+              <div class="info-card"><div class="label">Cuenta bancaria</div><div class="value">**** **** 4821</div></div>
+              <div class="info-card"><div class="label">Estado</div><div class="value active-dot">Activo</div></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label">Cuenta de acceso</div>
+            <div class="info-grid">
+              <div class="info-card"><div class="label">Usuario</div><div class="value">cmedina</div></div>
+              <div class="info-card"><div class="label">ID propietario</div><div class="value">#PRO-00042</div></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label">Resumen</div>
+            <div class="stat-row">
+              <div class="stat-card"><div class="s-label">Casas registradas</div><div class="s-value">4</div></div>
+              <div class="stat-card"><div class="s-label">Paquetes activos</div><div class="s-value">3</div></div>
+              <div class="stat-card"><div class="s-label">Reservas totales</div><div class="s-value">27</div></div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (activePanel === 'casas') {
+        <div class="panel active">
+          <div>
+            <div class="section-label">Casas registradas</div>
+            <div class="casas-list">
+              <div class="casa-item">
+                <div>
+                  <div class="casa-name">Casa El Nogal</div>
+                  <div class="casa-loc">Villa de Leyva · 4 dorm · 3 baños</div>
+                </div>
+                <span class="estado-badge estado-al_dia">Al día</span>
+              </div>
+
+              <div class="casa-item">
+                <div>
+                  <div class="casa-name">Finca La Ceiba</div>
+                  <div class="casa-loc">Salento · 6 dorm · 4 baños</div>
+                </div>
+                <span class="estado-badge estado-pendiente">Pendiente pago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (activePanel === 'historico') {
+        <div class="panel active">
+          <div class="historico-header">
+            <div class="section-label">Filtrar histórico</div>
+            <div class="filter-row">
+              <input type="date" [(ngModel)]="fechaDesde">
+              <input type="date" [(ngModel)]="fechaHasta">
+              <select [(ngModel)]="modalidad">
+                <option value="">Todas las modalidades</option>
+                <option value="Casa entera">Casa entera</option>
+                <option value="Por habitaciones">Por habitaciones</option>
+                <option value="Ambas">Ambas</option>
+              </select>
+              <button class="btn-filter" (click)="filtrarHistorico()">Aplicar</button>
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat-card"><div class="s-label">Paquetes totales</div><div class="s-value">{{ totalPaquetes }}</div></div>
+            <div class="stat-card"><div class="s-label">Vigentes</div><div class="s-value">{{ vigentes }}</div></div>
+            <div class="stat-card"><div class="s-label">Precio promedio</div><div class="s-value">$320k</div></div>
+          </div>
+
+          <div class="paq-table">
+            <table>
+              <thead>
+              <tr>
+                <th>ID</th>
+                <th>Fecha inicio</th>
+                <th>Fecha fin</th>
+                <th>Modalidad</th>
+                <th>Casa entera</th>
+                <th>Por habitación</th>
+                <th>Vigente</th>
+              </tr>
+              </thead>
+              <tbody>
+                @for (item of historicoFiltrado; track item.id) {
+                  <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.inicio }}</td>
+                    <td>{{ item.fin }}</td>
+                    <td>{{ item.modalidad }}</td>
+                    <td>{{ item.casaEntera }}</td>
+                    <td>{{ item.porHabitacion }}</td>
+                    <td [class.vigente-si]="item.vigente === 'Sí'" [class.vigente-no]="item.vigente === 'No'">
+                      {{ item.vigente }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
+</div>
