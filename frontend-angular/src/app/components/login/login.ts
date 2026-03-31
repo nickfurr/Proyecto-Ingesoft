@@ -24,7 +24,7 @@ export class Login {
   email = '';
   nombreCompleto = '';
   telefono = '';
-  cuentaBancaria = '';
+  numeroCuentaBancaria = '';
   activo = false;
   cargando = false;
 
@@ -40,7 +40,7 @@ export class Login {
       password: this.password,
       nombreCompleto: this.nombreCompleto,
       telefono: this.telefono,
-      cuentaBancaria:this.cuentaBancaria,
+      numeroCuentaBancaria:this.numeroCuentaBancaria,
       activo:this.activo
     };
 
@@ -49,7 +49,12 @@ export class Login {
         this.cargando = false;
         if(res.activo){
           localStorage.setItem('propietarioId', String(res.id));
+          localStorage.setItem('propietario-username', res.username ?? '');
           localStorage.setItem('nombrePropietario', res.nombreCompleto ?? '');
+          localStorage.setItem('propietario-telefono', res.telefono ?? '');
+          localStorage.setItem('propietario-activo', String(res.activo));
+          localStorage.setItem('propietario-cuentaBancaria', res.numeroCuentaBancaria ?? '');
+
           this.router.navigate(['/dashboard-propietario']);
 
         }else{

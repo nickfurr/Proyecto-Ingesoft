@@ -337,3 +337,17 @@
 .vigente-no {
   color: #b0b0b5;
 }
+.btn-logout {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid #3a3a40;
+  background: #232327;
+  color: #f5f5f5;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.btn-logout:hover {
+  background: #2c2c30;
+}

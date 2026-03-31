@@ -12,6 +12,7 @@ import com.edu.uniquindio.ruralstay.repository.PropietarioRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PaqueteAlquilerService {
@@ -90,5 +91,22 @@ public class PaqueteAlquilerService {
         paquete.setPrecioPorHabitacion(dto.precioPorHabitacion);
 
         return paqueteAlquilerRepository.save(paquete);
+    }
+    public List<PaqueteAlquilerDTO> listarActivosPorPropietario(Long propietarioId) {
+        return paqueteAlquilerRepository.findByCasaRural_Propietario_IdAndVigenteTrue(propietarioId)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    private PaqueteAlquilerDTO toDTO(PaqueteAlquiler paquete) {
+        PaqueteAlquilerDTO dto = new PaqueteAlquilerDTO();
+        dto.casaRuralId = paquete.getCasaRural().getCodigo();
+        dto.fechaInicio = paquete.getFechaInicio();
+        dto.fechaFin = paquete.getFechaFin();
+        dto.modalidad = paquete.getModalidad();
+        dto.precioCasaEntera = paquete.getPrecioCasaEntera();
+        dto.precioPorHabitacion = paquete.getPrecioPorHabitacion();
+        return dto;
     }
 }

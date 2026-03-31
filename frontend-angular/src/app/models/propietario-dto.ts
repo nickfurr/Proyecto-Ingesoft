@@ -6,6 +6,6 @@ export interface PropietarioDto{
   email: string | null;
   nombreCompleto: string | null;
   telefono: string | null;
-  cuentaBancaria: string | null;
+  numeroCuentaBancaria: string | null;
   activo: boolean | null;
 }

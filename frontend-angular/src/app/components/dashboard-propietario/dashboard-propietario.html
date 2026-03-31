@@ -2,9 +2,9 @@
   <aside class="sidebar">
     <div class="profile-block">
       <div class="avatar-ring">
-        <div class="avatar-inner">CM</div>
+        <div class="avatar-inner">{{ nombreAcronimo }}</div>
       </div>
-      <p class="prop-name">Carlos Medina Torres</p>
+      <p class="prop-name">{{ nombrePropietario }}</p>
       <span class="prop-badge">Propietario</span>
     </div>
 
@@ -32,6 +32,10 @@
         <div class="topbar-title">{{ panelTitle }}</div>
         <div class="topbar-sub">{{ panelSub }}</div>
       </div>
+
+      <button class="btn-logout" (click)="volverLogin()">
+        Volver al login
+      </button>
     </div>
 
     <div class="content">
@@ -41,27 +45,27 @@
           <div>
             <div class="section-label">Datos personales</div>
             <div class="info-grid">
-              <div class="info-card"><div class="label">Nombre completo</div><div class="value">Carlos Medina Torres</div></div>
-              <div class="info-card"><div class="label">Teléfono</div><div class="value">+57 300 555 0192</div></div>
-              <div class="info-card"><div class="label">Cuenta bancaria</div><div class="value">**** **** 4821</div></div>
-              <div class="info-card"><div class="label">Estado</div><div class="value active-dot">Activo</div></div>
+              <div class="info-card"><div class="label">Nombre completo</div><div class="value">{{ nombrePropietario }}</div></div>
+              <div class="info-card"><div class="label">Teléfono</div><div class="value">{{ telefonoPropietario }}</div></div>
+              <div class="info-card"><div class="label">Cuenta bancaria</div><div class="value">{{ cuentaBancariaPropietario }}</div></div>
+              <div class="info-card"><div class="label">Estado</div><div class="value active-dot">{{ activoPropietario }}</div></div>
             </div>
           </div>
 
           <div>
             <div class="section-label">Cuenta de acceso</div>
             <div class="info-grid">
-              <div class="info-card"><div class="label">Usuario</div><div class="value">cmedina</div></div>
-              <div class="info-card"><div class="label">ID propietario</div><div class="value">#PRO-00042</div></div>
+              <div class="info-card"><div class="label">Usuario</div><div class="value">{{ usernamePropietario }}</div></div>
+              <div class="info-card"><div class="label">ID propietario</div><div class="value">{{ propietarioId }}</div></div>
             </div>
           </div>
 
           <div>
             <div class="section-label">Resumen</div>
             <div class="stat-row">
-              <div class="stat-card"><div class="s-label">Casas registradas</div><div class="s-value">4</div></div>
-              <div class="stat-card"><div class="s-label">Paquetes activos</div><div class="s-value">3</div></div>
-              <div class="stat-card"><div class="s-label">Reservas totales</div><div class="s-value">27</div></div>
+              <div class="stat-card"><div class="s-label">Casas registradas</div><div class="s-value">{{ casasRegistradas }}</div></div>
+              <div class="stat-card"><div class="s-label">Paquetes activos</div><div class="s-value">{{ paquetesActivos }}</div></div>
+              <div class="stat-card"><div class="s-label">Reservas totales</div><div class="s-value">{{ reservasTotales }}</div></div>
             </div>
           </div>
         </div>
@@ -128,21 +132,6 @@
                 <th>Vigente</th>
               </tr>
               </thead>
-              <tbody>
-                @for (item of historicoFiltrado; track item.id) {
-                  <tr>
-                    <td>{{ item.id }}</td>
-                    <td>{{ item.inicio }}</td>
-                    <td>{{ item.fin }}</td>
-                    <td>{{ item.modalidad }}</td>
-                    <td>{{ item.casaEntera }}</td>
-                    <td>{{ item.porHabitacion }}</td>
-                    <td [class.vigente-si]="item.vigente === 'Sí'" [class.vigente-no]="item.vigente === 'No'">
-                      {{ item.vigente }}
-                    </td>
-                  </tr>
-                }
-              </tbody>
             </table>
           </div>
         </div>

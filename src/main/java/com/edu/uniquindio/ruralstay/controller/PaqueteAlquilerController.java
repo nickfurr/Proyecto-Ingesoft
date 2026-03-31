@@ -6,7 +6,9 @@ import com.edu.uniquindio.ruralstay.service.PaqueteAlquilerService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RestController
+@RequestMapping("/api/v1/paquetes")
+@CrossOrigin(origins = "http://localhost:4200")
 public class PaqueteAlquilerController {
     private final PaqueteAlquilerService service;
 
@@ -39,5 +41,10 @@ public class PaqueteAlquilerController {
     @GetMapping("/{id}")
     public PaqueteAlquiler obtener(@PathVariable Long id) {
         return service.buscarPorId(id).orElseThrow();
+    }
+    
+    @GetMapping("/propietario/{propietarioId}/activos")
+    public List<PaqueteAlquilerDTO> listarActivosPorPropietario(@PathVariable Long propietarioId) {
+        return service.listarActivosPorPropietario(propietarioId);
     }
 }

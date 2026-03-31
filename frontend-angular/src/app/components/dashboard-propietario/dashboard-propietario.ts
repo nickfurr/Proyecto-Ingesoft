@@ -1,6 +1,11 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { DashboardService } from '../../services/dashboard.service';
+import { CasaRuralDto } from '../../models/casa-rural-dto';
+import { ReservaDto } from '../../models/reserva-dto';
+import { PaqueteAlquilerDto } from '../../models/paquete-alquiler-dto';
 
 @Component({
   selector: 'app-dashboard-propietario',
@@ -8,7 +13,11 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './dashboard-propietario.html',
   styleUrl: './dashboard-propietario.css'
 })
-export class DashboardPropietario {
+export class DashboardPropietario implements OnInit {
+  private platformId = inject(PLATFORM_ID);
+  private router = inject(Router);
+  private dashboardService = inject(DashboardService);
+
   activePanel: 'info' | 'casas' | 'historico' = 'info';
 
   panelTitle = 'Mi información';
@@ -20,29 +29,90 @@ export class DashboardPropietario {
     historico: { title: 'Histórico de paquetes', sub: 'Consulta y filtra todos tus paquetes' }
   };
 
+  nombreAcronimo = '';
+  nombrePropietario = '';
+  usernamePropietario = '';
+  telefonoPropietario = '';
+  cuentaBancariaPropietario = '';
+  activoPropietario = false;
+  propietarioId = 0;
+
+  casasRegistradas = 0;
+  paquetesActivos = 0;
+  reservasTotales = 0;
+
+  casas: CasaRuralDto[] = [];
+  reservas: ReservaDto[] = [];
+  paquetesActivosLista: PaqueteAlquilerDto[] = [];
+
   fechaDesde = '2024-01-01';
   fechaHasta = '2025-03-30';
   modalidad = '';
 
-  historico = [
-    { id: '#PKT-001', inicio: '2024-01-10', fin: '2024-03-31', modalidad: 'Casa entera', casaEntera: '$850.000', porHabitacion: '—', vigente: 'No' },
-    { id: '#PKT-002', inicio: '2024-04-01', fin: '2024-06-30', modalidad: 'Por habitaciones', casaEntera: '—', porHabitacion: '$180.000', vigente: 'No' },
-    { id: '#PKT-003', inicio: '2024-07-01', fin: '2024-09-30', modalidad: 'Casa entera', casaEntera: '$920.000', porHabitacion: '—', vigente: 'No' },
-    { id: '#PKT-004', inicio: '2024-10-01', fin: '2025-03-31', modalidad: 'Ambas', casaEntera: '$780.000', porHabitacion: '$160.000', vigente: 'Sí' },
-    { id: '#PKT-005', inicio: '2025-01-15', fin: '2025-06-15', modalidad: 'Por habitaciones', casaEntera: '—', porHabitacion: '$200.000', vigente: 'Sí' },
-    { id: '#PKT-006', inicio: '2025-02-01', fin: '2025-08-01', modalidad: 'Casa entera', casaEntera: '$1.050.000', porHabitacion: '—', vigente: 'Sí' }
-  ];
-
+  historico = [];
   historicoFiltrado = [...this.historico];
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.propietarioId = Number(localStorage.getItem('propietarioId') ?? '0');
+      this.usernamePropietario = localStorage.getItem('propietario-username') ?? '';
+      this.nombrePropietario = localStorage.getItem('nombrePropietario') ?? '';
+      this.telefonoPropietario = localStorage.getItem('propietario-telefono') ?? '';
+      this.cuentaBancariaPropietario = localStorage.getItem('propietario-cuentaBancaria') ?? '';
+      this.activoPropietario = localStorage.getItem('propietario-activo') === 'true';
+      this.nombreAcronimo = this.nombrePropietario.slice(0,2).toUpperCase();
+
+        this.cargarInfoPropietario();
+    }
+  }
+
+  cargarInfoPropietario(): void {
+    if (this.propietarioId <= 0) return;
+
+    this.dashboardService.obtenerCasasPorPropietario(this.propietarioId).subscribe({
+      next: (res) => {
+        this.casas = res;
+        this.casasRegistradas = res.length;
+      },
+      error: (err) => console.error('Error cargando casas', err)
+    });
+
+    this.dashboardService.obtenerPaquetesActivosPorPropietario(this.propietarioId).subscribe({
+      next: (res) => {
+        this.paquetesActivosLista = res;
+        this.paquetesActivos = res.length;
+      },
+      error: (err) => console.error('Error cargando paquetes activos', err)
+    });
+
+    this.dashboardService.obtenerReservasPorPropietario(this.propietarioId).subscribe({
+      next: (res) => {
+        this.reservas = res;
+        this.reservasTotales = res.length;
+      },
+      error: (err) => console.error('Error cargando reservas', err)
+    });
+  }
 
   showPanel(id: 'info' | 'casas' | 'historico') {
     this.activePanel = id;
     this.panelTitle = this.panelMeta[id].title;
     this.panelSub = this.panelMeta[id].sub;
+
+    if (id === 'info') {
+      this.cargarInfoPropietario();
+    }
+  }
+
+  volverLogin(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.clear();
+    }
+    this.router.navigate(['/']);
   }
 
   filtrarHistorico() {
-    this.historicoFiltrado = this.historico.filter(item => {
+    this.historicoFiltrado = this.historico.filter((item: any) => {
       const inRange =
         (!this.fechaDesde || item.inicio >= this.fechaDesde) &&
         (!this.fechaHasta || item.fin <= this.fechaHasta);
@@ -60,6 +130,6 @@ export class DashboardPropietario {
   }
 
   get vigentes(): number {
-    return this.historicoFiltrado.filter(item => item.vigente === 'Sí').length;
+    return this.historicoFiltrado.filter((item: any) => item.vigente === 'Sí').length;
   }
 }

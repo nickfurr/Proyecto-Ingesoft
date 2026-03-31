@@ -49,9 +49,20 @@ public class PropietarioService {
 
     }
 
-    public Optional<Propietario> buscrPorId(Long id) {
-
-        return propietarioRepository.findById(id);
+    public PropietarioDTO buscrPorId(Long id) {
+        Optional<Propietario> propietarioOpt = propietarioRepository.findById(id);
+        Propietario propietario = propietarioOpt.get();
+        return new PropietarioDTO(
+                "Usuario encontrado!",
+                propietario.getId(),
+                propietario.getUsername(),
+                propietario.getPassword(),
+                propietario.getEmail(),
+                propietario.getNombreCompleto(),
+                propietario.getTelefono(),
+                propietario.getNumeroCuentaBancaria(),
+                propietario.getActivo()
+        );
     }
 
     public Propietario guardar(Propietario propietario) {

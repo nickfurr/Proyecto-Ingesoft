@@ -30,4 +30,5 @@ public interface PaqueteAlquilerRepository extends JpaRepository<PaqueteAlquiler
             @Param("propietarioId") Long propietarioId,
             @Param("fechaInicio") LocalDate fechaInicio,
             @Param("fechaFin") LocalDate fechaFin);
+    List<PaqueteAlquiler> findByCasaRural_Propietario_IdAndVigenteTrue(Long propietarioId);
 }

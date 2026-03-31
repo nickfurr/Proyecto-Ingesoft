@@ -8,7 +8,7 @@ import { PropietarioDto } from '../models/propietario-dto';
 })
 export class LoginService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/v1';
+  private apiUrl = 'http://localhost:8080/api/v1/propietarios';
 
   loginPropietario(data: PropietarioDto): Observable<PropietarioDto> {
     return this.http.post<PropietarioDto>(`${this.apiUrl}/login-propietario`, data);
