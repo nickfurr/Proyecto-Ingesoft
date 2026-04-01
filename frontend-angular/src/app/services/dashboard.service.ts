@@ -49,4 +49,8 @@ export class DashboardService {
       params: { propietarioId }
     });
   }
+
+  registrarPago(numeroReserva: number): Observable<ReservaDto> {
+    return this.http.patch<ReservaDto>(`${this.apiReservas}/${numeroReserva}/registrar-pago`, {});
+  }
 }

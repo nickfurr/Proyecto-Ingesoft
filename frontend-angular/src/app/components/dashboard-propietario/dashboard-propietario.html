@@ -20,6 +20,10 @@
       Histórico de paquetes
     </button>
 
+    <button class="nav-item" [class.active]="activePanel === 'reservas'" (click)="showPanel('reservas')">
+      Reservas
+    </button>
+
     <div class="btn-add">
       <button class="btn-primary btn-casa" [class.active]="activePanel === 'crearCasa'" (click)="showPanel('crearCasa')">
         Nueva casa
@@ -352,6 +356,76 @@
               </button>
             </div>
           </div>
+        </div>
+      }
+      @if (activePanel === 'reservas') {
+        <div class="panel active">
+          <div class="section-label">Reservas de mis casas</div>
+
+          @if (errorReserva) {
+            <div class="msg-error">{{ errorReserva }}</div>
+          }
+
+          @if (exitoReserva) {
+            <div class="msg-success">{{ exitoReserva }}</div>
+          }
+
+          @if (reservas.length > 0) {
+            <div class="paq-table">
+              <table>
+                <thead>
+                <tr>
+                  <th>N° Reserva</th>
+                  <th>Casa</th>
+                  <th>Fechas</th>
+                  <th>Cliente</th>
+                  <th>Importe total</th>
+                  <th>Estado de pago</th>
+                  <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                  @for (reserva of reservas; track reserva.numeroReserva) {
+                    <tr>
+                      <td>#{{ reserva.numeroReserva }}</td>
+                      <td>Casa #{{ reserva.casaRural }}</td>
+                      <td>{{ reserva.fechaInicio }} al {{ reserva.fechaFin }}</td>
+                      <td>{{ reserva.telefonoCliente || 'Sin teléfono' }}</td>
+                      <td>${{ reserva.importeTotal }}</td>
+                      <td>
+                  <span
+                    class="estado-badge"
+                    [ngClass]="claseEstadoReserva(reserva.estadoPago)">
+                    {{ formatearEstadoReserva(reserva.estadoPago) }}
+                  </span>
+                      </td>
+                      <td>
+                        @if (puedeRegistrarPago(reserva)) {
+                          <button
+                            class="btn-registrar-pago"
+                            (click)="registrarPago(reserva)"
+                            [disabled]="registrandoPagoReservaId === reserva.numeroReserva">
+                            {{
+                              registrandoPagoReservaId === reserva.numeroReserva
+                                ? 'Registrando...'
+                                : 'Registrar pago'
+                            }}
+                          </button>
+                        } @else {
+                          <span class="accion-no-disponible">No disponible</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="info-card">
+              <div class="label">Sin reservas</div>
+              <div class="value">No tienes reservas registradas por ahora.</div>
+            </div>
+          }
         </div>
       }
 

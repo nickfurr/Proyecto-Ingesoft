@@ -1,9 +1,12 @@
 package com.edu.uniquindio.ruralstay.service;
 
 import com.edu.uniquindio.ruralstay.dto.ReservaDTO;
+import com.edu.uniquindio.ruralstay.entity.Pago;
 import com.edu.uniquindio.ruralstay.entity.Reserva;
+import com.edu.uniquindio.ruralstay.entity.enums.EstadoReserva;
 import com.edu.uniquindio.ruralstay.repository.ReservaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +42,26 @@ public class ReservaService {
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ReservaDTO registrarPago(Long numeroReserva) {
+        Reserva reserva = reservaRepository.findById(numeroReserva)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+        if (reserva.getEstado() != EstadoReserva.PAGADA_PARCIAL) {
+            throw new RuntimeException("Solo se puede registrar pago en reservas con estado PAGADA_PARCIAL");
+        }
+
+        Pago pago = reserva.getPago();
+        if (pago != null) {
+            pago.setVerificado(true);
+        }
+
+        reserva.setEstado(EstadoReserva.CONFIRMADA);
+
+        Reserva reservaActualizada = reservaRepository.save(reserva);
+        return toDTO(reservaActualizada);
     }
 
     private ReservaDTO toDTO(Reserva reserva) {

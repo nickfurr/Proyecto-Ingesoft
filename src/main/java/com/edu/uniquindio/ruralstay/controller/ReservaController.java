@@ -21,4 +21,8 @@ public class ReservaController {
     public List<ReservaDTO> listarPorPropietario(@PathVariable Long propietarioId) {
         return reservaService.listarPorPropietario(propietarioId);
     }
+    @PatchMapping("/{numeroReserva}/registrar-pago")
+    public ReservaDTO registrarPago(@PathVariable Long numeroReserva) {
+        return reservaService.registrarPago(numeroReserva);
+    }
 }

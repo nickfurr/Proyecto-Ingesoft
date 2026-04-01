@@ -19,7 +19,11 @@ export class DashboardPropietario implements OnInit {
   private router = inject(Router);
   private dashboardService = inject(DashboardService);
 
-  activePanel: 'crearPaquete' | 'crearCasa' | 'info' | 'casas' | 'historico' = 'info';
+  registrandoPagoReservaId: number | null = null;
+  errorReserva = '';
+  exitoReserva = '';
+
+  activePanel: 'reservas' | 'crearPaquete' | 'crearCasa' | 'info' | 'casas' | 'historico' = 'info';
 
   panelTitle = 'Mi información';
   panelSub = 'Datos personales y cuenta';
@@ -29,7 +33,8 @@ export class DashboardPropietario implements OnInit {
     casas: { title: 'Mis casas registradas', sub: 'Lista de propiedades activas' },
     historico: { title: 'Histórico de paquetes', sub: 'Consulta y filtra todos tus paquetes' },
     crearCasa: { title: 'Crear una nueva casa', sub: 'Llena cada campo para crear tu casa' },
-    crearPaquete: { title: 'Crear un nuevo paquete', sub: 'Llena cada campo para crear un nuevo paquete' }
+    crearPaquete: { title: 'Crear un nuevo paquete', sub: 'Llena cada campo para crear un nuevo paquete' },
+    reservas: { title: 'Reserva', sub: 'Lista de reservas activas' }
   };
 
   nombreAcronimo = '';
@@ -118,7 +123,7 @@ export class DashboardPropietario implements OnInit {
     });
   }
 
-  showPanel(id: 'info' | 'casas' | 'historico' | 'crearPaquete' | 'crearCasa'): void {
+  showPanel(id: 'reservas' | 'info' | 'casas' | 'historico' | 'crearPaquete' | 'crearCasa'): void {
     this.activePanel = id;
     this.panelTitle = this.panelMeta[id].title;
     this.panelSub = this.panelMeta[id].sub;
@@ -334,5 +339,69 @@ export class DashboardPropietario implements OnInit {
 
   get precioPromedioTexto(): string {
     return `$${this.precioPromedio.toFixed(0)}`;
+  }
+
+  registrarPago(reserva: ReservaDto): void {
+    if (reserva.estadoPago !== 'PAGADA_PARCIAL') {
+      return;
+    }
+
+    this.errorReserva = '';
+    this.exitoReserva = '';
+    this.registrandoPagoReservaId = reserva.numeroReserva;
+
+    this.dashboardService.registrarPago(reserva.numeroReserva).subscribe({
+      next: (reservaActualizada) => {
+        this.reservas = this.reservas.map(item =>
+          item.numeroReserva === reservaActualizada.numeroReserva ? reservaActualizada : item
+        );
+
+        this.exitoReserva = `La reserva #${reserva.numeroReserva} fue confirmada correctamente.`;
+        this.registrandoPagoReservaId = null;
+      },
+      error: (err) => {
+        this.errorReserva = err?.error?.message || 'No se pudo registrar el pago.';
+        this.registrandoPagoReservaId = null;
+        console.error('Error registrando pago', err);
+      }
+    });
+  }
+
+  puedeRegistrarPago(reserva: ReservaDto): boolean {
+    return reserva.estadoPago === 'PAGADA_PARCIAL';
+  }
+
+  formatearEstadoReserva(estado: string): string {
+    switch (estado) {
+      case 'PENDIENTE_PAGO':
+        return 'Pendiente de pago';
+      case 'PAGADA_PARCIAL':
+        return 'Pago reportado';
+      case 'CONFIRMADA':
+        return 'Confirmada';
+      case 'VENCIDA':
+        return 'Vencida';
+      case 'CANCELADA':
+        return 'Cancelada';
+      default:
+        return estado;
+    }
+  }
+
+  claseEstadoReserva(estado: string): string {
+    switch (estado) {
+      case 'PENDIENTE_PAGO':
+        return 'estado-pendiente';
+      case 'PAGADA_PARCIAL':
+        return 'estado-parcial';
+      case 'CONFIRMADA':
+        return 'estado-confirmada';
+      case 'VENCIDA':
+        return 'estado-vencido';
+      case 'CANCELADA':
+        return 'estado-cancelada';
+      default:
+        return 'estado-pendiente';
+    }
   }
 }
