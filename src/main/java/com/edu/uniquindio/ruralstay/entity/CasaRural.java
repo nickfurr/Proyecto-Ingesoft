@@ -1,5 +1,6 @@
 package com.edu.uniquindio.ruralstay.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,6 +42,7 @@ public class CasaRural {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "propietario_id")
+    @JsonBackReference
     private Propietario propietario;
 
     @OneToMany(mappedBy = "casaRural", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -45,6 +45,7 @@ class PaqueteAlquilerServiceTest {
                 cliente.setUsername("cliente1");
                 cliente.setPassword("1234");
                 cliente.setTelefonoContacto("30292834");
+                cliente.setEmail("cliente1@test.com");
                 cliente = clienteRepository.saveAndFlush(cliente);
 
                 // 🔹 1. Crear propietario
@@ -53,9 +54,9 @@ class PaqueteAlquilerServiceTest {
                 propietario.setTelefono("3114552");
                 propietario.setNumeroCuentaBancaria("1234");
                 propietario.setActivo(true);
-
                 propietario.setUsername("juan123");
                 propietario.setPassword("1234");
+                propietario.setEmail("juan@test.com");
                 propietario = propietarioRepository.save(propietario);
 
                 // 🔹 2. Crear casa rural
@@ -124,6 +125,7 @@ class PaqueteAlquilerServiceTest {
                 propietario.setTelefono("3001234567");
                 propietario.setPassword("1234");
                 propietario.setUsername("propietarioPrueba");
+                propietario.setEmail("propietario@test.com");
                 propietario = propietarioRepository.save(propietario); // ID se genera automáticamente
 
                 List<HistoricoPaqueteDTO> resultado = service.obtenerHistorico(

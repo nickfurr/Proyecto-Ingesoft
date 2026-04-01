@@ -1,0 +1,434 @@
+<div class="app">
+  <aside class="sidebar">
+    <div class="profile-block">
+      <div class="avatar-ring">
+        <div class="avatar-inner">{{ nombreAcronimo }}</div>
+      </div>
+      <p class="prop-name">{{ nombrePropietario }}</p>
+      <span class="prop-badge">Propietario</span>
+    </div>
+
+    <button class="nav-item" [class.active]="activePanel === 'info'" (click)="showPanel('info')">
+      Mi información
+    </button>
+
+    <button class="nav-item" [class.active]="activePanel === 'casas'" (click)="showPanel('casas')">
+      Mis casas
+    </button>
+
+    <button class="nav-item" [class.active]="activePanel === 'historico'" (click)="showPanel('historico')">
+      Histórico de paquetes
+    </button>
+
+    <button class="nav-item" [class.active]="activePanel === 'reservas'" (click)="showPanel('reservas')">
+      Reservas
+    </button>
+
+    <div class="btn-add">
+      <button class="btn-primary btn-casa" [class.active]="activePanel === 'crearCasa'" (click)="showPanel('crearCasa')">
+        Nueva casa
+      </button>
+      <button class="btn-primary btn-paquete" [class.active]="activePanel === 'crearPaquete'" (click)="showPanel('crearPaquete')">
+        Nuevo paquete
+      </button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">{{ panelTitle }}</div>
+        <div class="topbar-sub">{{ panelSub }}</div>
+      </div>
+
+      <button class="btn-logout" (click)="volverLogin()">
+        Volver al login
+      </button>
+    </div>
+
+    <div class="content">
+
+      @if (activePanel === 'info') {
+        <div class="panel active">
+          <div>
+            <div class="section-label">Datos personales</div>
+            <div class="info-grid">
+              <div class="info-card"><div class="label">Nombre completo</div><div class="value">{{ nombrePropietario }}</div></div>
+              <div class="info-card"><div class="label">Teléfono</div><div class="value">{{ telefonoPropietario }}</div></div>
+              <div class="info-card"><div class="label">Cuenta bancaria</div><div class="value">{{ cuentaBancariaPropietario }}</div></div>
+              <div class="info-card"><div class="label">Estado</div><div class="value active-dot">{{ activoPropietario ? 'Activo' : 'Inactivo' }}</div></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label">Cuenta de acceso</div>
+            <div class="info-grid">
+              <div class="info-card"><div class="label">Usuario</div><div class="value">{{ usernamePropietario }}</div></div>
+              <div class="info-card"><div class="label">ID propietario</div><div class="value">{{ propietarioId }}</div></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label">Resumen</div>
+            <div class="stat-row">
+              <div class="stat-card"><div class="s-label">Casas registradas</div><div class="s-value">{{ casasRegistradas }}</div></div>
+              <div class="stat-card"><div class="s-label">Paquetes activos</div><div class="s-value">{{ paquetesActivos }}</div></div>
+              <div class="stat-card"><div class="s-label">Reservas totales</div><div class="s-value">{{ reservasTotales }}</div></div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (activePanel === 'casas') {
+        <div class="panel active">
+          <div>
+            <div class="section-label">Casas registradas</div>
+
+            @if (casas.length > 0) {
+              <div class="casas-list">
+                @for (casa of casas; track casa.codigo) {
+                  <div class="casa-item">
+                    <div>
+                      <div class="casa-name">Casa código #{{ casa.codigo }}</div>
+                      <div class="casa-loc">
+                        {{ casa.poblacion }} ·
+                        {{ casa.numeroDormitorios }} dorm ·
+                        {{ casa.numeroBanos }} baños ·
+                        {{ casa.numeroCocinas }} cocinas
+                      </div>
+                      <div class="casa-loc">
+                        {{ casa.descripcionGeneral }}
+                      </div>
+                    </div>
+
+                    <span
+                      class="estado-badge"
+                      [ngClass]="casa.activa ? 'estado-al_dia' : 'estado-vencido'">
+                      {{ casa.activa ? 'Activa' : 'Inactiva' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="info-card">
+                <div class="label">Sin resultados</div>
+                <div class="value">No tienes casas registradas todavía.</div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (activePanel === 'historico') {
+        <div class="panel active">
+          <div class="historico-header">
+            <div class="section-label">Filtrar histórico</div>
+            <div class="filter-row">
+              <input type="date" [(ngModel)]="fechaDesde">
+              <input type="date" [(ngModel)]="fechaHasta">
+
+              <select [(ngModel)]="modalidad">
+                <option value="">Todas las modalidades</option>
+                <option value="CASA_ENTERA">Casa entera</option>
+                <option value="POR_HABITACIONES">Por habitaciones</option>
+                <option value="AMBAS">Ambas</option>
+              </select>
+
+              <button class="btn-filter" (click)="filtrarHistorico()">Aplicar</button>
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat-card">
+              <div class="s-label">Paquetes totales</div>
+              <div class="s-value">{{ totalPaquetes }}</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="s-label">Vigentes</div>
+              <div class="s-value">{{ vigentes }}</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="s-label">Precio promedio</div>
+              <div class="s-value">{{ precioPromedioTexto }}</div>
+            </div>
+          </div>
+
+          @if (historicoFiltrado.length > 0) {
+            <div class="paq-table">
+              <table>
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Casa</th>
+                  <th>Fecha inicio</th>
+                  <th>Fecha fin</th>
+                  <th>Modalidad</th>
+                  <th>Casa entera</th>
+                  <th>Por habitación</th>
+                  <th>Reservas</th>
+                  <th>Ingresos</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                  @for (item of historicoFiltrado; track item.idPaquete) {
+                    <tr>
+                      <td>{{ item.idPaquete }}</td>
+                      <td>{{ item.casaRuralId }}</td>
+                      <td>{{ item.fechaInicio }}</td>
+                      <td>{{ item.fechaFin }}</td>
+                      <td>{{ item.modalidad }}</td>
+                      <td>{{ item.precioCasaEntera ?? '-' }}</td>
+                      <td>{{ item.precioPorHabitacion ?? '-' }}</td>
+                      <td>{{ item.totalReservas }}</td>
+                      <td>{{ item.ingresos ?? 0 }}</td>
+                      <td>{{ item.vigente ? 'Vigente' : 'Histórico' }}</td>
+                      <td>
+                        <button class="btn-edit" (click)="editarPaquete(item)">
+                          Editar
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="info-card">
+              <div class="label">Sin resultados</div>
+              <div class="value">No se encontraron paquetes para ese filtro.</div>
+            </div>
+          }
+          @if (mostrarFormularioPaquete) {
+            <div class="paquete-form-card">
+              <div class="section-label">
+                {{ modoEdicionPaquete ? 'Editar paquete' : 'Crear paquete' }}
+              </div>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Casa</label>
+                  <select [(ngModel)]="paqueteForm.casaRuralId">
+                    <option [ngValue]="0">Selecciona una casa</option>
+                    @for (casa of casas; track casa.codigo) {
+                      <option [ngValue]="casa.codigo">
+                        Casa #{{ casa.codigo }} - {{ casa.poblacion }}
+                      </option>
+                    }
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label>Modalidad</label>
+                  <select [(ngModel)]="paqueteForm.modalidad" (change)="onModalidadChange()">
+                    <option value="">Selecciona una modalidad</option>
+                    <option value="CASA_ENTERA">Casa entera</option>
+                    <option value="POR_HABITACIONES">Por habitaciones</option>
+                    <option value="AMBAS">Ambas</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label>Fecha inicio</label>
+                  <input type="date" [(ngModel)]="paqueteForm.fechaInicio">
+                </div>
+
+                <div class="form-field">
+                  <label>Fecha fin</label>
+                  <input type="date" [(ngModel)]="paqueteForm.fechaFin">
+                </div>
+
+                <div class="form-field">
+                  <label>Precio casa entera</label>
+                  <input
+                    type="number"
+                    min="0"
+                    [(ngModel)]="paqueteForm.precioCasaEntera"
+                    [disabled]="paqueteForm.modalidad === 'POR_HABITACIONES'">
+                </div>
+
+                <div class="form-field">
+                  <label>Precio por habitación</label>
+                  <input
+                    type="number"
+                    min="0"
+                    [(ngModel)]="paqueteForm.precioPorHabitacion"
+                    [disabled]="paqueteForm.modalidad === 'CASA_ENTERA'">
+                </div>
+              </div>
+
+              @if (errorPaquete) {
+                <div class="msg-error">{{ errorPaquete }}</div>
+              }
+
+              @if (exitoPaquete) {
+                <div class="msg-success">{{ exitoPaquete }}</div>
+              }
+
+              <div class="form-actions">
+                <button class="btn-cancel" (click)="cerrarFormularioPaquete()">Cancelar</button>
+                <button class="btn-save" (click)="guardarPaquete()" [disabled]="guardandoPaquete">
+                  {{ guardandoPaquete ? 'Guardando...' : (modoEdicionPaquete ? 'Guardar cambios' : 'Crear paquete') }}
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (activePanel === 'crearCasa') {
+        <div class="panel active">
+          <div>Hola crear casa</div>
+        </div>
+      }
+
+      @if (activePanel === 'crearPaquete') {
+        <div class="panel active">
+          <div class="paquete-form-card">
+            <div class="section-label">Nuevo paquete de alquiler</div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Casa</label>
+                <select [(ngModel)]="paqueteForm.casaRuralId">
+                  <option [ngValue]="0">Selecciona una casa</option>
+                  @for (casa of casas; track casa.codigo) {
+                    <option [ngValue]="casa.codigo">
+                      Casa #{{ casa.codigo }} - {{ casa.poblacion }}
+                    </option>
+                  }
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label>Modalidad</label>
+                <select [(ngModel)]="paqueteForm.modalidad" (change)="onModalidadChange()">
+                  <option value="">Selecciona una modalidad</option>
+                  <option value="CASA_ENTERA">Casa entera</option>
+                  <option value="POR_HABITACIONES">Por habitaciones</option>
+                  <option value="AMBAS">Ambas</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label>Fecha inicio</label>
+                <input type="date" [(ngModel)]="paqueteForm.fechaInicio">
+              </div>
+
+              <div class="form-field">
+                <label>Fecha fin</label>
+                <input type="date" [(ngModel)]="paqueteForm.fechaFin">
+              </div>
+
+              <div class="form-field">
+                <label>Precio casa entera</label>
+                <input
+                  type="number"
+                  min="0"
+                  [(ngModel)]="paqueteForm.precioCasaEntera"
+                  [disabled]="paqueteForm.modalidad === 'POR_HABITACIONES'">
+              </div>
+
+              <div class="form-field">
+                <label>Precio por habitación</label>
+                <input
+                  type="number"
+                  min="0"
+                  [(ngModel)]="paqueteForm.precioPorHabitacion"
+                  [disabled]="paqueteForm.modalidad === 'CASA_ENTERA'">
+              </div>
+            </div>
+
+            @if (errorPaquete) {
+              <div class="msg-error">{{ errorPaquete }}</div>
+            }
+
+            @if (exitoPaquete) {
+              <div class="msg-success">{{ exitoPaquete }}</div>
+            }
+
+            <div class="form-actions">
+              <button class="btn-save" (click)="guardarPaquete()" [disabled]="guardandoPaquete">
+                {{ guardandoPaquete ? 'Guardando...' : 'Crear paquete' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+      @if (activePanel === 'reservas') {
+        <div class="panel active">
+          <div class="section-label">Reservas de mis casas</div>
+
+          @if (errorReserva) {
+            <div class="msg-error">{{ errorReserva }}</div>
+          }
+
+          @if (exitoReserva) {
+            <div class="msg-success">{{ exitoReserva }}</div>
+          }
+
+          @if (reservas.length > 0) {
+            <div class="paq-table">
+              <table>
+                <thead>
+                <tr>
+                  <th>N° Reserva</th>
+                  <th>Casa</th>
+                  <th>Fechas</th>
+                  <th>Cliente</th>
+                  <th>Importe total</th>
+                  <th>Estado de pago</th>
+                  <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                  @for (reserva of reservas; track reserva.numeroReserva) {
+                    <tr>
+                      <td>#{{ reserva.numeroReserva }}</td>
+                      <td>Casa #{{ reserva.casaRural }}</td>
+                      <td>{{ reserva.fechaInicio }} al {{ reserva.fechaFin }}</td>
+                      <td>{{ reserva.telefonoCliente || 'Sin teléfono' }}</td>
+                      <td>${{ reserva.importeTotal }}</td>
+                      <td>
+                  <span
+                    class="estado-badge"
+                    [ngClass]="claseEstadoReserva(reserva.estadoPago)">
+                    {{ formatearEstadoReserva(reserva.estadoPago) }}
+                  </span>
+                      </td>
+                      <td>
+                        @if (puedeRegistrarPago(reserva)) {
+                          <button
+                            class="btn-registrar-pago"
+                            (click)="registrarPago(reserva)"
+                            [disabled]="registrandoPagoReservaId === reserva.numeroReserva">
+                            {{
+                              registrandoPagoReservaId === reserva.numeroReserva
+                                ? 'Registrando...'
+                                : 'Registrar pago'
+                            }}
+                          </button>
+                        } @else {
+                          <span class="accion-no-disponible">No disponible</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="info-card">
+              <div class="label">Sin reservas</div>
+              <div class="value">No tienes reservas registradas por ahora.</div>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  </div>
+</div>
