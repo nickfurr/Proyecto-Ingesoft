@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { CasaRuralDto } from '../models/casa-rural-dto';
 import { ReservaDto } from '../models/reserva-dto';
 import { PaqueteAlquilerDto } from '../models/paquete-alquiler-dto';
+import { HistoricoPaqueteDto } from '../models/historico-paquete-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,16 @@ export class DashboardService {
 
   obtenerPaquetesActivosPorPropietario(propietarioId: number): Observable<PaqueteAlquilerDto[]> {
     return this.http.get<PaqueteAlquilerDto[]>(`${this.apiPaquetes}/propietario/${propietarioId}/activos`);
+  }
+  obtenerHistoricoPaquetes(propietarioId: number, fechaInicio: string, fechaFin: string): Observable<HistoricoPaqueteDto[]> {
+    return this.http.get<HistoricoPaqueteDto[]>(
+      `${this.apiPaquetes}/propietario/${propietarioId}/historico`,
+      {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      }
+    );
   }
 }

@@ -21,8 +21,12 @@
     </button>
 
     <div class="btn-add">
-      <button class="btn-primary btn-casa">Nueva casa</button>
-      <button class="btn-primary btn-paquete">Nuevo paquete</button>
+      <button class="btn-primary btn-casa" [class.active]="activePanel === 'crearCasa'" (click)="showPanel('crearCasa')">
+        Nueva casa
+      </button>
+      <button class="btn-primary btn-paquete" [class.active]="activePanel === 'crearPaquete'" (click)="showPanel('crearPaquete')">
+        Nuevo paquete
+      </button>
     </div>
   </aside>
 
@@ -48,7 +52,7 @@
               <div class="info-card"><div class="label">Nombre completo</div><div class="value">{{ nombrePropietario }}</div></div>
               <div class="info-card"><div class="label">Teléfono</div><div class="value">{{ telefonoPropietario }}</div></div>
               <div class="info-card"><div class="label">Cuenta bancaria</div><div class="value">{{ cuentaBancariaPropietario }}</div></div>
-              <div class="info-card"><div class="label">Estado</div><div class="value active-dot">{{ activoPropietario }}</div></div>
+              <div class="info-card"><div class="label">Estado</div><div class="value active-dot">{{ activoPropietario ? 'Activo' : 'Inactivo' }}</div></div>
             </div>
           </div>
 
@@ -75,23 +79,38 @@
         <div class="panel active">
           <div>
             <div class="section-label">Casas registradas</div>
-            <div class="casas-list">
-              <div class="casa-item">
-                <div>
-                  <div class="casa-name">Casa El Nogal</div>
-                  <div class="casa-loc">Villa de Leyva · 4 dorm · 3 baños</div>
-                </div>
-                <span class="estado-badge estado-al_dia">Al día</span>
-              </div>
 
-              <div class="casa-item">
-                <div>
-                  <div class="casa-name">Finca La Ceiba</div>
-                  <div class="casa-loc">Salento · 6 dorm · 4 baños</div>
-                </div>
-                <span class="estado-badge estado-pendiente">Pendiente pago</span>
+            @if (casas.length > 0) {
+              <div class="casas-list">
+                @for (casa of casas; track casa.codigo) {
+                  <div class="casa-item">
+                    <div>
+                      <div class="casa-name">Casa código #{{ casa.codigo }}</div>
+                      <div class="casa-loc">
+                        {{ casa.poblacion }} ·
+                        {{ casa.numeroDormitorios }} dorm ·
+                        {{ casa.numeroBanos }} baños ·
+                        {{ casa.numeroCocinas }} cocinas
+                      </div>
+                      <div class="casa-loc">
+                        {{ casa.descripcionGeneral }}
+                      </div>
+                    </div>
+
+                    <span
+                      class="estado-badge"
+                      [ngClass]="casa.activa ? 'estado-al_dia' : 'estado-vencido'">
+                      {{ casa.activa ? 'Activa' : 'Inactiva' }}
+                    </span>
+                  </div>
+                }
               </div>
-            </div>
+            } @else {
+              <div class="info-card">
+                <div class="label">Sin resultados</div>
+                <div class="value">No tienes casas registradas todavía.</div>
+              </div>
+            }
           </div>
         </div>
       }
@@ -103,37 +122,88 @@
             <div class="filter-row">
               <input type="date" [(ngModel)]="fechaDesde">
               <input type="date" [(ngModel)]="fechaHasta">
+
               <select [(ngModel)]="modalidad">
                 <option value="">Todas las modalidades</option>
-                <option value="Casa entera">Casa entera</option>
-                <option value="Por habitaciones">Por habitaciones</option>
-                <option value="Ambas">Ambas</option>
+                <option value="CASA_ENTERA">Casa entera</option>
+                <option value="POR_HABITACIONES">Por habitaciones</option>
+                <option value="AMBAS">Ambas</option>
               </select>
+
               <button class="btn-filter" (click)="filtrarHistorico()">Aplicar</button>
             </div>
           </div>
 
           <div class="stat-row">
-            <div class="stat-card"><div class="s-label">Paquetes totales</div><div class="s-value">{{ totalPaquetes }}</div></div>
-            <div class="stat-card"><div class="s-label">Vigentes</div><div class="s-value">{{ vigentes }}</div></div>
-            <div class="stat-card"><div class="s-label">Precio promedio</div><div class="s-value">$320k</div></div>
+            <div class="stat-card">
+              <div class="s-label">Paquetes totales</div>
+              <div class="s-value">{{ totalPaquetes }}</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="s-label">Vigentes</div>
+              <div class="s-value">{{ vigentes }}</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="s-label">Precio promedio</div>
+              <div class="s-value">{{ precioPromedioTexto }}</div>
+            </div>
           </div>
 
-          <div class="paq-table">
-            <table>
-              <thead>
-              <tr>
-                <th>ID</th>
-                <th>Fecha inicio</th>
-                <th>Fecha fin</th>
-                <th>Modalidad</th>
-                <th>Casa entera</th>
-                <th>Por habitación</th>
-                <th>Vigente</th>
-              </tr>
-              </thead>
-            </table>
-          </div>
+          @if (historicoFiltrado.length > 0) {
+            <div class="paq-table">
+              <table>
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Casa</th>
+                  <th>Fecha inicio</th>
+                  <th>Fecha fin</th>
+                  <th>Modalidad</th>
+                  <th>Casa entera</th>
+                  <th>Por habitación</th>
+                  <th>Reservas</th>
+                  <th>Ingresos</th>
+                  <th>Estado</th>
+                </tr>
+                </thead>
+                <tbody>
+                  @for (item of historicoFiltrado; track item.idPaquete) {
+                    <tr>
+                      <td>{{ item.idPaquete }}</td>
+                      <td>{{ item.casaRuralId }}</td>
+                      <td>{{ item.fechaInicio }}</td>
+                      <td>{{ item.fechaFin }}</td>
+                      <td>{{ item.modalidad }}</td>
+                      <td>{{ item.precioCasaEntera ?? '-' }}</td>
+                      <td>{{ item.precioPorHabitacion ?? '-' }}</td>
+                      <td>{{ item.totalReservas }}</td>
+                      <td>{{ item.ingresos ?? 0 }}</td>
+                      <td>{{ item.vigente ? 'Vigente' : 'Histórico' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="info-card">
+              <div class="label">Sin resultados</div>
+              <div class="value">No se encontraron paquetes para ese filtro.</div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (activePanel === 'crearCasa') {
+        <div class="panel active">
+          <div>Hola crear casa</div>
+        </div>
+      }
+
+      @if (activePanel === 'crearPaquete') {
+        <div class="panel active">
+          <div>Hola crear paquete</div>
         </div>
       }
 

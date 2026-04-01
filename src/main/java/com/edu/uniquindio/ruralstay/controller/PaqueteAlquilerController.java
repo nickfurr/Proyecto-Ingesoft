@@ -1,10 +1,12 @@
 package com.edu.uniquindio.ruralstay.controller;
 
+import com.edu.uniquindio.ruralstay.dto.HistoricoPaqueteDTO;
 import com.edu.uniquindio.ruralstay.dto.PaqueteAlquilerDTO;
 import com.edu.uniquindio.ruralstay.entity.PaqueteAlquiler;
 import com.edu.uniquindio.ruralstay.service.PaqueteAlquilerService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 @RestController
 @RequestMapping("/api/v1/paquetes")
@@ -42,9 +44,26 @@ public class PaqueteAlquilerController {
     public PaqueteAlquiler obtener(@PathVariable Long id) {
         return service.buscarPorId(id).orElseThrow();
     }
-    
+
     @GetMapping("/propietario/{propietarioId}/activos")
     public List<PaqueteAlquilerDTO> listarActivosPorPropietario(@PathVariable Long propietarioId) {
         return service.listarActivosPorPropietario(propietarioId);
+    }
+
+    @GetMapping("/propietario/{propietarioId}/historico")
+    public List<HistoricoPaqueteDTO> obtenerHistorico(
+            @PathVariable Long propietarioId,
+            @RequestParam LocalDate fechaInicio,
+            @RequestParam LocalDate fechaFin) {
+
+        return service.obtenerHistorico(propietarioId, fechaInicio, fechaFin);
+    }
+
+    @PutMapping("/{id}/desactivar")
+    public void desactivarPaquete(
+            @PathVariable Long id,
+            @RequestParam Long propietarioId) {
+
+        service.desactivarPaquete(id, propietarioId);
     }
 }

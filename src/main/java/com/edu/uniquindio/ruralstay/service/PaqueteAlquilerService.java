@@ -38,8 +38,16 @@ public class PaqueteAlquilerService {
         return paqueteAlquilerRepository.save(paqueteAlquiler);
     }
 
-    public void eliminar(Long id) {
-        paqueteAlquilerRepository.deleteById(id);
+    public void desactivarPaquete(Long paqueteId, Long propietarioId) {
+        PaqueteAlquiler paquete = paqueteAlquilerRepository.findById(paqueteId)
+                .orElseThrow(() -> new RuntimeException("Paquete no encontrado"));
+
+        if (!paquete.getCasaRural().getPropietario().getId().equals(propietarioId)) {
+            throw new RuntimeException("No tiene permisos para eliminar este paquete");
+        }
+
+        paquete.setVigente(false);
+        paqueteAlquilerRepository.save(paquete);
     }
 
     public List<HistoricoPaqueteDTO> obtenerHistorico(
@@ -77,21 +85,28 @@ public class PaqueteAlquilerService {
 
     public PaqueteAlquiler modificarPaquete(Long paqueteId, PaqueteAlquilerDTO dto, Long propietarioId) {
 
-        PaqueteAlquiler paquete = paqueteAlquilerRepository.findById(paqueteId)
+        PaqueteAlquiler paqueteActual = paqueteAlquilerRepository.findById(paqueteId)
                 .orElseThrow(() -> new RuntimeException("Paquete no encontrado"));
 
-        if (!paquete.getCasaRural().getPropietario().getId().equals(propietarioId)) {
+        if (!paqueteActual.getCasaRural().getPropietario().getId().equals(propietarioId)) {
             throw new RuntimeException("No tiene permisos para modificar este paquete");
         }
 
-        paquete.setFechaInicio(dto.fechaInicio);
-        paquete.setFechaFin(dto.fechaFin);
-        paquete.setModalidad(dto.modalidad);
-        paquete.setPrecioCasaEntera(dto.precioCasaEntera);
-        paquete.setPrecioPorHabitacion(dto.precioPorHabitacion);
+        paqueteActual.setVigente(false);
+        paqueteAlquilerRepository.save(paqueteActual);
 
-        return paqueteAlquilerRepository.save(paquete);
+        PaqueteAlquiler nuevoPaquete = new PaqueteAlquiler();
+        nuevoPaquete.setCasaRural(paqueteActual.getCasaRural());
+        nuevoPaquete.setFechaInicio(dto.fechaInicio);
+        nuevoPaquete.setFechaFin(dto.fechaFin);
+        nuevoPaquete.setModalidad(dto.modalidad);
+        nuevoPaquete.setPrecioCasaEntera(dto.precioCasaEntera);
+        nuevoPaquete.setPrecioPorHabitacion(dto.precioPorHabitacion);
+        nuevoPaquete.setVigente(true);
+
+        return paqueteAlquilerRepository.save(nuevoPaquete);
     }
+
     public List<PaqueteAlquilerDTO> listarActivosPorPropietario(Long propietarioId) {
         return paqueteAlquilerRepository.findByCasaRural_Propietario_IdAndVigenteTrue(propietarioId)
                 .stream()

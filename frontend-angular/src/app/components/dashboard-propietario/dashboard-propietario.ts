@@ -6,6 +6,7 @@ import { DashboardService } from '../../services/dashboard.service';
 import { CasaRuralDto } from '../../models/casa-rural-dto';
 import { ReservaDto } from '../../models/reserva-dto';
 import { PaqueteAlquilerDto } from '../../models/paquete-alquiler-dto';
+import { HistoricoPaqueteDto } from '../../models/historico-paquete-dto';
 
 @Component({
   selector: 'app-dashboard-propietario',
@@ -18,7 +19,7 @@ export class DashboardPropietario implements OnInit {
   private router = inject(Router);
   private dashboardService = inject(DashboardService);
 
-  activePanel: 'info' | 'casas' | 'historico' = 'info';
+  activePanel: 'crearPaquete' | 'crearCasa' | 'info' | 'casas' | 'historico' = 'info';
 
   panelTitle = 'Mi información';
   panelSub = 'Datos personales y cuenta';
@@ -26,7 +27,9 @@ export class DashboardPropietario implements OnInit {
   panelMeta = {
     info: { title: 'Mi información', sub: 'Datos personales y cuenta' },
     casas: { title: 'Mis casas registradas', sub: 'Lista de propiedades activas' },
-    historico: { title: 'Histórico de paquetes', sub: 'Consulta y filtra todos tus paquetes' }
+    historico: { title: 'Histórico de paquetes', sub: 'Consulta y filtra todos tus paquetes' },
+    crearCasa: { title: 'Crear una nueva casa', sub: 'Llena cada campo para crear tu casa' },
+    crearPaquete: { title: 'Crear un nuevo paquete', sub: 'Llena cada campo para crear un nuevo paquete' }
   };
 
   nombreAcronimo = '';
@@ -49,8 +52,8 @@ export class DashboardPropietario implements OnInit {
   fechaHasta = '2025-03-30';
   modalidad = '';
 
-  historico = [];
-  historicoFiltrado = [...this.historico];
+  historico: HistoricoPaqueteDto[] = [];
+  historicoFiltrado: HistoricoPaqueteDto[] = [];
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -60,9 +63,9 @@ export class DashboardPropietario implements OnInit {
       this.telefonoPropietario = localStorage.getItem('propietario-telefono') ?? '';
       this.cuentaBancariaPropietario = localStorage.getItem('propietario-cuentaBancaria') ?? '';
       this.activoPropietario = localStorage.getItem('propietario-activo') === 'true';
-      this.nombreAcronimo = this.nombrePropietario.slice(0,2).toUpperCase();
+      this.nombreAcronimo = this.nombrePropietario.slice(0, 2).toUpperCase();
 
-        this.cargarInfoPropietario();
+      this.cargarInfoPropietario();
     }
   }
 
@@ -94,13 +97,17 @@ export class DashboardPropietario implements OnInit {
     });
   }
 
-  showPanel(id: 'info' | 'casas' | 'historico') {
+  showPanel(id: 'info' | 'casas' | 'historico' | 'crearPaquete' | 'crearCasa'): void {
     this.activePanel = id;
     this.panelTitle = this.panelMeta[id].title;
     this.panelSub = this.panelMeta[id].sub;
 
     if (id === 'info') {
       this.cargarInfoPropietario();
+    }
+
+    if (id === 'historico') {
+      this.cargarHistorico();
     }
   }
 
@@ -111,18 +118,36 @@ export class DashboardPropietario implements OnInit {
     this.router.navigate(['/']);
   }
 
-  filtrarHistorico() {
-    this.historicoFiltrado = this.historico.filter((item: any) => {
-      const inRange =
-        (!this.fechaDesde || item.inicio >= this.fechaDesde) &&
-        (!this.fechaHasta || item.fin <= this.fechaHasta);
+  filtrarHistorico(): void {
+    if (this.propietarioId <= 0) return;
 
-      const inMod =
-        !this.modalidad ||
-        item.modalidad.toLowerCase().includes(this.modalidad.toLowerCase());
+    this.dashboardService
+      .obtenerHistoricoPaquetes(this.propietarioId, this.fechaDesde, this.fechaHasta)
+      .subscribe({
+        next: (res) => {
+          console.log('Histórico recibido:', res);
+          this.historico = res;
+          this.historicoFiltrado = res.filter(item =>
+            !this.modalidad || item.modalidad === this.modalidad
+          );
+        },
+        error: (err) => console.error('Error cargando histórico', err)
+      });
+  }
 
-      return inRange && inMod;
-    });
+  cargarHistorico(): void {
+    if (this.propietarioId <= 0) return;
+
+    this.dashboardService
+      .obtenerHistoricoPaquetes(this.propietarioId, this.fechaDesde, this.fechaHasta)
+      .subscribe({
+        next: (res) => {
+          console.log('Histórico recibido al abrir panel:', res);
+          this.historico = res;
+          this.historicoFiltrado = res;
+        },
+        error: (err) => console.error('Error cargando histórico', err)
+      });
   }
 
   get totalPaquetes(): number {
@@ -130,6 +155,25 @@ export class DashboardPropietario implements OnInit {
   }
 
   get vigentes(): number {
-    return this.historicoFiltrado.filter((item: any) => item.vigente === 'Sí').length;
+    return this.historicoFiltrado.filter(item => item.vigente === true).length;
+  }
+
+  get precioPromedio(): number {
+    if (this.historicoFiltrado.length === 0) return 0;
+
+    const suma = this.historicoFiltrado.reduce((acc, item) => {
+      const precio =
+        item.precioCasaEntera ??
+        item.precioPorHabitacion ??
+        0;
+
+      return acc + precio;
+    }, 0);
+
+    return suma / this.historicoFiltrado.length;
+  }
+
+  get precioPromedioTexto(): string {
+    return `$${this.precioPromedio.toFixed(0)}`;
   }
 }

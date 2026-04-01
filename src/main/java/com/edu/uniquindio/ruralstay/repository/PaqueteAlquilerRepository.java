@@ -12,19 +12,26 @@ import java.util.List;
 public interface PaqueteAlquilerRepository extends JpaRepository<PaqueteAlquiler, Long> {
     @Query("""
                     SELECT new com.edu.uniquindio.ruralstay.dto.HistoricoPaqueteDTO(
-                    p.id,
-                    p.precioCasaEntera,
-                    p.modalidad,
-                    COUNT(r),
-                    SUM(r.importeTotal)
+                            p.id,
+                            p.casaRural.codigo,
+                            p.fechaInicio,
+                            p.fechaFin,
+                            p.modalidad,
+                            p.precioCasaEntera,
+                            p.precioPorHabitacion,
+                            p.vigente,
+                            COUNT(r),
+                            SUM(r.importeTotal)
                         )
-                    FROM PaqueteAlquiler p
-            LEFT JOIN Reserva r
-                ON r.casaRural = p.casaRural
-                AND r.fechaEntrada BETWEEN p.fechaInicio AND p.fechaFin
-            WHERE p.casaRural.propietario.id = :propietarioId
-            AND p.fechaInicio BETWEEN :fechaInicio AND :fechaFin
-            GROUP BY p.id, p.precioCasaEntera, p.modalidad
+                        FROM PaqueteAlquiler p
+                        LEFT JOIN Reserva r
+                            ON r.casaRural = p.casaRural
+                            AND r.fechaEntrada BETWEEN p.fechaInicio AND p.fechaFin
+                        WHERE p.casaRural.propietario.id = :propietarioId
+                          AND p.fechaInicio BETWEEN :fechaInicio AND :fechaFin
+                        GROUP BY p.id, p.casaRural.codigo, p.fechaInicio, p.fechaFin,
+                                 p.modalidad, p.precioCasaEntera, p.precioPorHabitacion, p.vigente
+                        ORDER BY p.fechaInicio DESC
             """)
     List<HistoricoPaqueteDTO> obtenerHistorico(
             @Param("propietarioId") Long propietarioId,
