@@ -38,4 +38,15 @@ export class DashboardService {
       }
     );
   }
+  crearPaquete(propietarioId: number, payload: PaqueteAlquilerDto): Observable<any> {
+    return this.http.post(`${this.apiPaquetes}`, payload, {
+      params: { propietarioId }
+    });
+  }
+
+  modificarPaquete(paqueteId: number, propietarioId: number, payload: PaqueteAlquilerDto): Observable<any> {
+    return this.http.put(`${this.apiPaquetes}/${paqueteId}`, payload, {
+      params: { propietarioId }
+    });
+  }
 }

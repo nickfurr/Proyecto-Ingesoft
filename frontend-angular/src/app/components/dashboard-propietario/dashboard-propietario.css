@@ -351,3 +351,169 @@
 .btn-logout:hover {
   background: #2c2c30;
 }
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.historico-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-row input,
+.filter-row select {
+  background: #1b1b1d;
+  border: 1px solid #2f2f33;
+  color: #f5f5f5;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.btn-filter,
+.btn-edit,
+.btn-save,
+.btn-cancel,
+.btn-logout {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-filter {
+  background: #185fa5;
+  color: white;
+}
+
+.btn-edit {
+  background: #2b7a4b;
+  color: white;
+}
+
+.btn-save {
+  background: #0f6e56;
+  color: white;
+}
+
+.btn-cancel {
+  background: #39393d;
+  color: white;
+}
+
+.btn-logout {
+  margin-left: auto;
+  background: #3a2020;
+  color: #ffdede;
+}
+
+.paq-table {
+  background: #1b1b1d;
+  border: 1px solid #2f2f33;
+  border-radius: 14px;
+  overflow-x: auto;
+}
+
+.paq-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.paq-table th,
+.paq-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #2f2f33;
+  text-align: left;
+  font-size: 13px;
+}
+
+.paq-table th {
+  color: #9a9aa0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.paquete-form-card {
+  background: #1b1b1d;
+  border: 1px solid #2f2f33;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 12px;
+  color: #a8a8ad;
+}
+
+.form-field input,
+.form-field select {
+  background: #111214;
+  border: 1px solid #2f2f33;
+  color: #f5f5f5;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.form-field input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.msg-error {
+  margin-top: 14px;
+  background: #3a1f1f;
+  border: 1px solid #6d2d2d;
+  color: #ffb5b5;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.msg-success {
+  margin-top: 14px;
+  background: #173327;
+  border: 1px solid #2d6d4f;
+  color: #b8f5d5;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.estado-al_dia {
+  background: #173327;
+  color: #b8f5d5;
+}
+
+.estado-vencido {
+  background: #3a2020;
+  color: #ffb5b5;
+}

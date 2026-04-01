@@ -4,6 +4,7 @@ import com.edu.uniquindio.ruralstay.dto.HistoricoPaqueteDTO;
 import com.edu.uniquindio.ruralstay.dto.PaqueteAlquilerDTO;
 import com.edu.uniquindio.ruralstay.entity.CasaRural;
 import com.edu.uniquindio.ruralstay.entity.PaqueteAlquiler;
+import com.edu.uniquindio.ruralstay.repository.CasaRuralRepository;
 import com.edu.uniquindio.ruralstay.repository.PaqueteAlquilerRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +20,13 @@ public class PaqueteAlquilerService {
 
     private final PaqueteAlquilerRepository paqueteAlquilerRepository;
     private final PropietarioRepository propietarioRepository;
+    private final CasaRuralRepository casaRuralRepository;
 
     public PaqueteAlquilerService(PaqueteAlquilerRepository paqueteAlquilerRepository,
-            PropietarioRepository propietarioRepository) {
+                                  PropietarioRepository propietarioRepository, CasaRuralRepository casaRuralRepository) {
         this.paqueteAlquilerRepository = paqueteAlquilerRepository;
         this.propietarioRepository = propietarioRepository;
+        this.casaRuralRepository = casaRuralRepository;
     }
 
     public List<PaqueteAlquiler> listarTodos() {
@@ -66,45 +69,51 @@ public class PaqueteAlquilerService {
         return paqueteAlquilerRepository.obtenerHistorico(
                 propietarioId, fechaInicio, fechaFin);
     }
-    public PaqueteAlquiler crearPaquete(PaqueteAlquilerDTO dto, Long propietarioId) {
 
-        CasaRural casa = propietarioRepository.buscarCasaDePropietario(dto.casaRuralId, propietarioId)
+    public PaqueteAlquilerDTO crearPaquete(PaqueteAlquilerDTO dto, Long propietarioId) {
+
+        CasaRural casa = propietarioRepository.buscarCasaDePropietario(dto.getCasaRuralId(), propietarioId)
                 .orElseThrow(() -> new RuntimeException("La casa no pertenece al propietario"));
 
         PaqueteAlquiler paquete = new PaqueteAlquiler();
         paquete.setCasaRural(casa);
-        paquete.setFechaInicio(dto.fechaInicio);
-        paquete.setFechaFin(dto.fechaFin);
-        paquete.setModalidad(dto.modalidad);
-        paquete.setPrecioCasaEntera(dto.precioCasaEntera);
-        paquete.setPrecioPorHabitacion(dto.precioPorHabitacion);
+        paquete.setFechaInicio(dto.getFechaInicio());
+        paquete.setFechaFin(dto.getFechaFin());
+        paquete.setModalidad(dto.getModalidad());
+        paquete.setPrecioCasaEntera(dto.getPrecioCasaEntera());
+        paquete.setPrecioPorHabitacion(dto.getPrecioPorHabitacion());
         paquete.setVigente(true);
 
-        return paqueteAlquilerRepository.save(paquete);
+        PaqueteAlquiler guardado = paqueteAlquilerRepository.save(paquete);
+
+        return toDTO(guardado);
     }
 
-    public PaqueteAlquiler modificarPaquete(Long paqueteId, PaqueteAlquilerDTO dto, Long propietarioId) {
-
-        PaqueteAlquiler paqueteActual = paqueteAlquilerRepository.findById(paqueteId)
+    public PaqueteAlquilerDTO modificarPaquete(Long id, PaqueteAlquilerDTO dto, Long propietarioId) {
+        PaqueteAlquiler paquete = paqueteAlquilerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paquete no encontrado"));
 
-        if (!paqueteActual.getCasaRural().getPropietario().getId().equals(propietarioId)) {
-            throw new RuntimeException("No tiene permisos para modificar este paquete");
+        if (!paquete.getCasaRural().getPropietario().getId().equals(propietarioId)) {
+            throw new RuntimeException("No tienes permiso para modificar este paquete");
         }
 
-        paqueteActual.setVigente(false);
-        paqueteAlquilerRepository.save(paqueteActual);
+        CasaRural casa = casaRuralRepository.findById(dto.getCasaRuralId())
+                .orElseThrow(() -> new RuntimeException("Casa rural no encontrada"));
 
-        PaqueteAlquiler nuevoPaquete = new PaqueteAlquiler();
-        nuevoPaquete.setCasaRural(paqueteActual.getCasaRural());
-        nuevoPaquete.setFechaInicio(dto.fechaInicio);
-        nuevoPaquete.setFechaFin(dto.fechaFin);
-        nuevoPaquete.setModalidad(dto.modalidad);
-        nuevoPaquete.setPrecioCasaEntera(dto.precioCasaEntera);
-        nuevoPaquete.setPrecioPorHabitacion(dto.precioPorHabitacion);
-        nuevoPaquete.setVigente(true);
+        if (!casa.getPropietario().getId().equals(propietarioId)) {
+            throw new RuntimeException("La casa no pertenece al propietario");
+        }
 
-        return paqueteAlquilerRepository.save(nuevoPaquete);
+        paquete.setCasaRural(casa);
+        paquete.setFechaInicio(dto.getFechaInicio());
+        paquete.setFechaFin(dto.getFechaFin());
+        paquete.setModalidad(dto.getModalidad());
+        paquete.setPrecioCasaEntera(dto.getPrecioCasaEntera());
+        paquete.setPrecioPorHabitacion(dto.getPrecioPorHabitacion());
+
+        PaqueteAlquiler actualizado = paqueteAlquilerRepository.save(paquete);
+
+        return toDTO(actualizado);
     }
 
     public List<PaqueteAlquilerDTO> listarActivosPorPropietario(Long propietarioId) {
@@ -116,12 +125,13 @@ public class PaqueteAlquilerService {
 
     private PaqueteAlquilerDTO toDTO(PaqueteAlquiler paquete) {
         PaqueteAlquilerDTO dto = new PaqueteAlquilerDTO();
-        dto.casaRuralId = paquete.getCasaRural().getCodigo();
-        dto.fechaInicio = paquete.getFechaInicio();
-        dto.fechaFin = paquete.getFechaFin();
-        dto.modalidad = paquete.getModalidad();
-        dto.precioCasaEntera = paquete.getPrecioCasaEntera();
-        dto.precioPorHabitacion = paquete.getPrecioPorHabitacion();
+        dto.setCasaRuralId(paquete.getCasaRural().getCodigo());
+        dto.setFechaInicio(paquete.getFechaInicio());
+        dto.setFechaFin(paquete.getFechaFin());
+        dto.setModalidad(paquete.getModalidad());
+        dto.setPrecioCasaEntera(paquete.getPrecioCasaEntera());
+        dto.setPrecioPorHabitacion(paquete.getPrecioPorHabitacion());
+        dto.setVigente(paquete.getVigente());
         return dto;
     }
 }

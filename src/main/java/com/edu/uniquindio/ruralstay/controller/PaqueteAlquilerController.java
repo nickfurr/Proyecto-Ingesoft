@@ -19,7 +19,7 @@ public class PaqueteAlquilerController {
     }
 
     @PostMapping
-    public PaqueteAlquiler crearPaquete(
+    public PaqueteAlquilerDTO crearPaquete(
             @RequestBody PaqueteAlquilerDTO dto,
             @RequestParam Long propietarioId) {
 
@@ -27,7 +27,7 @@ public class PaqueteAlquilerController {
     }
 
     @PutMapping("/{id}")
-    public PaqueteAlquiler modificarPaquete(
+    public PaqueteAlquilerDTO modificarPaquete(
             @PathVariable Long id,
             @RequestBody PaqueteAlquilerDTO dto,
             @RequestParam Long propietarioId) {

@@ -55,6 +55,16 @@ export class DashboardPropietario implements OnInit {
   historico: HistoricoPaqueteDto[] = [];
   historicoFiltrado: HistoricoPaqueteDto[] = [];
 
+  // NUEVO
+  mostrarFormularioPaquete = false;
+  modoEdicionPaquete = false;
+  paqueteEditandoId: number | null = null;
+  guardandoPaquete = false;
+  errorPaquete = '';
+  exitoPaquete = '';
+
+  paqueteForm: PaqueteAlquilerDto = this.crearFormularioVacio();
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.propietarioId = Number(localStorage.getItem('propietarioId') ?? '0');
@@ -67,6 +77,17 @@ export class DashboardPropietario implements OnInit {
 
       this.cargarInfoPropietario();
     }
+  }
+
+  crearFormularioVacio(): PaqueteAlquilerDto {
+    return {
+      casaRuralId: 0,
+      fechaInicio: '',
+      fechaFin: '',
+      modalidad: '',
+      precioCasaEntera: null,
+      precioPorHabitacion: null
+    };
   }
 
   cargarInfoPropietario(): void {
@@ -108,6 +129,11 @@ export class DashboardPropietario implements OnInit {
 
     if (id === 'historico') {
       this.cargarHistorico();
+      this.cerrarFormularioPaquete();
+    }
+
+    if (id === 'crearPaquete') {
+      this.abrirFormularioCrear();
     }
   }
 
@@ -125,7 +151,6 @@ export class DashboardPropietario implements OnInit {
       .obtenerHistoricoPaquetes(this.propietarioId, this.fechaDesde, this.fechaHasta)
       .subscribe({
         next: (res) => {
-          console.log('Histórico recibido:', res);
           this.historico = res;
           this.historicoFiltrado = res.filter(item =>
             !this.modalidad || item.modalidad === this.modalidad
@@ -142,12 +167,146 @@ export class DashboardPropietario implements OnInit {
       .obtenerHistoricoPaquetes(this.propietarioId, this.fechaDesde, this.fechaHasta)
       .subscribe({
         next: (res) => {
-          console.log('Histórico recibido al abrir panel:', res);
           this.historico = res;
-          this.historicoFiltrado = res;
+          this.historicoFiltrado = !this.modalidad
+            ? res
+            : res.filter(item => item.modalidad === this.modalidad);
         },
         error: (err) => console.error('Error cargando histórico', err)
       });
+  }
+
+  abrirFormularioCrear(): void {
+    this.modoEdicionPaquete = false;
+    this.paqueteEditandoId = null;
+    this.paqueteForm = this.crearFormularioVacio();
+    this.mostrarFormularioPaquete = true;
+    this.errorPaquete = '';
+    this.exitoPaquete = '';
+  }
+
+  editarPaquete(item: HistoricoPaqueteDto): void {
+    this.activePanel = 'historico';
+    this.modoEdicionPaquete = true;
+    this.paqueteEditandoId = item.idPaquete;
+    this.mostrarFormularioPaquete = true;
+    this.errorPaquete = '';
+    this.exitoPaquete = '';
+
+    this.paqueteForm = {
+      casaRuralId: item.casaRuralId,
+      fechaInicio: item.fechaInicio,
+      fechaFin: item.fechaFin,
+      modalidad: item.modalidad,
+      precioCasaEntera: item.precioCasaEntera ?? null,
+      precioPorHabitacion: item.precioPorHabitacion ?? null
+    };
+  }
+
+  cerrarFormularioPaquete(): void {
+    this.mostrarFormularioPaquete = false;
+    this.modoEdicionPaquete = false;
+    this.paqueteEditandoId = null;
+    this.paqueteForm = this.crearFormularioVacio();
+    this.errorPaquete = '';
+    this.exitoPaquete = '';
+  }
+
+  validarFormularioPaquete(): string {
+    if (!this.paqueteForm.casaRuralId || this.paqueteForm.casaRuralId <= 0) {
+      return 'Debes seleccionar una casa.';
+    }
+
+    if (!this.paqueteForm.fechaInicio || !this.paqueteForm.fechaFin) {
+      return 'Debes ingresar fecha de inicio y fecha de fin.';
+    }
+
+    if (this.paqueteForm.fechaInicio > this.paqueteForm.fechaFin) {
+      return 'La fecha de inicio no puede ser mayor a la fecha de fin.';
+    }
+
+    if (!this.paqueteForm.modalidad) {
+      return 'Debes seleccionar una modalidad.';
+    }
+
+    if (
+      (this.paqueteForm.modalidad === 'CASA_ENTERA' || this.paqueteForm.modalidad === 'AMBAS') &&
+      (!this.paqueteForm.precioCasaEntera || this.paqueteForm.precioCasaEntera <= 0)
+    ) {
+      return 'Debes ingresar un precio válido para casa entera.';
+    }
+
+    if (
+      (this.paqueteForm.modalidad === 'POR_HABITACIONES' || this.paqueteForm.modalidad === 'AMBAS') &&
+      (!this.paqueteForm.precioPorHabitacion || this.paqueteForm.precioPorHabitacion <= 0)
+    ) {
+      return 'Debes ingresar un precio válido por habitación.';
+    }
+
+    return '';
+  }
+
+  onModalidadChange(): void {
+    if (this.paqueteForm.modalidad === 'CASA_ENTERA') {
+      this.paqueteForm.precioPorHabitacion = null;
+    }
+
+    if (this.paqueteForm.modalidad === 'POR_HABITACIONES') {
+      this.paqueteForm.precioCasaEntera = null;
+    }
+  }
+
+  guardarPaquete(): void {
+    this.errorPaquete = '';
+    this.exitoPaquete = '';
+
+    const errorValidacion = this.validarFormularioPaquete();
+    if (errorValidacion) {
+      this.errorPaquete = errorValidacion;
+      return;
+    }
+
+    this.guardandoPaquete = true;
+
+    const payload: PaqueteAlquilerDto = {
+      casaRuralId: Number(this.paqueteForm.casaRuralId),
+      fechaInicio: this.paqueteForm.fechaInicio,
+      fechaFin: this.paqueteForm.fechaFin,
+      modalidad: this.paqueteForm.modalidad,
+      precioCasaEntera:
+        this.paqueteForm.modalidad === 'POR_HABITACIONES'
+          ? null
+          : this.paqueteForm.precioCasaEntera,
+      precioPorHabitacion:
+        this.paqueteForm.modalidad === 'CASA_ENTERA'
+          ? null
+          : this.paqueteForm.precioPorHabitacion
+    };
+
+    const request = this.modoEdicionPaquete && this.paqueteEditandoId
+      ? this.dashboardService.modificarPaquete(this.paqueteEditandoId, this.propietarioId, payload)
+      : this.dashboardService.crearPaquete(this.propietarioId, payload);
+
+    request.subscribe({
+      next: () => {
+        this.guardandoPaquete = false;
+        this.exitoPaquete = this.modoEdicionPaquete
+          ? 'Paquete modificado correctamente.'
+          : 'Paquete creado correctamente.';
+
+        this.cargarInfoPropietario();
+        this.cargarHistorico();
+
+        if (!this.modoEdicionPaquete) {
+          this.paqueteForm = this.crearFormularioVacio();
+        }
+      },
+      error: (err) => {
+        this.guardandoPaquete = false;
+        this.errorPaquete = err?.error?.message || 'Ocurrió un error al guardar el paquete.';
+        console.error('Error guardando paquete', err);
+      }
+    });
   }
 
   get totalPaquetes(): number {

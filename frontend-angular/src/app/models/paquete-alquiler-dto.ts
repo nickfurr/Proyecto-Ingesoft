@@ -3,6 +3,6 @@ export interface PaqueteAlquilerDto {
   fechaInicio: string;
   fechaFin: string;
   modalidad: string;
-  precioCasaEntera: number;
-  precioPorHabitacion: number;
+  precioCasaEntera?: number | null;
+  precioPorHabitacion?: number | null;
 }

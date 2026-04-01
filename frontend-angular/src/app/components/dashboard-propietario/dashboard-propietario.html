@@ -166,6 +166,7 @@
                   <th>Reservas</th>
                   <th>Ingresos</th>
                   <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -181,6 +182,11 @@
                       <td>{{ item.totalReservas }}</td>
                       <td>{{ item.ingresos ?? 0 }}</td>
                       <td>{{ item.vigente ? 'Vigente' : 'Histórico' }}</td>
+                      <td>
+                        <button class="btn-edit" (click)="editarPaquete(item)">
+                          Editar
+                        </button>
+                      </td>
                     </tr>
                   }
                 </tbody>
@@ -190,6 +196,80 @@
             <div class="info-card">
               <div class="label">Sin resultados</div>
               <div class="value">No se encontraron paquetes para ese filtro.</div>
+            </div>
+          }
+          @if (mostrarFormularioPaquete) {
+            <div class="paquete-form-card">
+              <div class="section-label">
+                {{ modoEdicionPaquete ? 'Editar paquete' : 'Crear paquete' }}
+              </div>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label>Casa</label>
+                  <select [(ngModel)]="paqueteForm.casaRuralId">
+                    <option [ngValue]="0">Selecciona una casa</option>
+                    @for (casa of casas; track casa.codigo) {
+                      <option [ngValue]="casa.codigo">
+                        Casa #{{ casa.codigo }} - {{ casa.poblacion }}
+                      </option>
+                    }
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label>Modalidad</label>
+                  <select [(ngModel)]="paqueteForm.modalidad" (change)="onModalidadChange()">
+                    <option value="">Selecciona una modalidad</option>
+                    <option value="CASA_ENTERA">Casa entera</option>
+                    <option value="POR_HABITACIONES">Por habitaciones</option>
+                    <option value="AMBAS">Ambas</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label>Fecha inicio</label>
+                  <input type="date" [(ngModel)]="paqueteForm.fechaInicio">
+                </div>
+
+                <div class="form-field">
+                  <label>Fecha fin</label>
+                  <input type="date" [(ngModel)]="paqueteForm.fechaFin">
+                </div>
+
+                <div class="form-field">
+                  <label>Precio casa entera</label>
+                  <input
+                    type="number"
+                    min="0"
+                    [(ngModel)]="paqueteForm.precioCasaEntera"
+                    [disabled]="paqueteForm.modalidad === 'POR_HABITACIONES'">
+                </div>
+
+                <div class="form-field">
+                  <label>Precio por habitación</label>
+                  <input
+                    type="number"
+                    min="0"
+                    [(ngModel)]="paqueteForm.precioPorHabitacion"
+                    [disabled]="paqueteForm.modalidad === 'CASA_ENTERA'">
+                </div>
+              </div>
+
+              @if (errorPaquete) {
+                <div class="msg-error">{{ errorPaquete }}</div>
+              }
+
+              @if (exitoPaquete) {
+                <div class="msg-success">{{ exitoPaquete }}</div>
+              }
+
+              <div class="form-actions">
+                <button class="btn-cancel" (click)="cerrarFormularioPaquete()">Cancelar</button>
+                <button class="btn-save" (click)="guardarPaquete()" [disabled]="guardandoPaquete">
+                  {{ guardandoPaquete ? 'Guardando...' : (modoEdicionPaquete ? 'Guardar cambios' : 'Crear paquete') }}
+                </button>
+              </div>
             </div>
           }
         </div>
@@ -203,7 +283,75 @@
 
       @if (activePanel === 'crearPaquete') {
         <div class="panel active">
-          <div>Hola crear paquete</div>
+          <div class="paquete-form-card">
+            <div class="section-label">Nuevo paquete de alquiler</div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Casa</label>
+                <select [(ngModel)]="paqueteForm.casaRuralId">
+                  <option [ngValue]="0">Selecciona una casa</option>
+                  @for (casa of casas; track casa.codigo) {
+                    <option [ngValue]="casa.codigo">
+                      Casa #{{ casa.codigo }} - {{ casa.poblacion }}
+                    </option>
+                  }
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label>Modalidad</label>
+                <select [(ngModel)]="paqueteForm.modalidad" (change)="onModalidadChange()">
+                  <option value="">Selecciona una modalidad</option>
+                  <option value="CASA_ENTERA">Casa entera</option>
+                  <option value="POR_HABITACIONES">Por habitaciones</option>
+                  <option value="AMBAS">Ambas</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label>Fecha inicio</label>
+                <input type="date" [(ngModel)]="paqueteForm.fechaInicio">
+              </div>
+
+              <div class="form-field">
+                <label>Fecha fin</label>
+                <input type="date" [(ngModel)]="paqueteForm.fechaFin">
+              </div>
+
+              <div class="form-field">
+                <label>Precio casa entera</label>
+                <input
+                  type="number"
+                  min="0"
+                  [(ngModel)]="paqueteForm.precioCasaEntera"
+                  [disabled]="paqueteForm.modalidad === 'POR_HABITACIONES'">
+              </div>
+
+              <div class="form-field">
+                <label>Precio por habitación</label>
+                <input
+                  type="number"
+                  min="0"
+                  [(ngModel)]="paqueteForm.precioPorHabitacion"
+                  [disabled]="paqueteForm.modalidad === 'CASA_ENTERA'">
+              </div>
+            </div>
+
+            @if (errorPaquete) {
+              <div class="msg-error">{{ errorPaquete }}</div>
+            }
+
+            @if (exitoPaquete) {
+              <div class="msg-success">{{ exitoPaquete }}</div>
+            }
+
+            <div class="form-actions">
+              <button class="btn-save" (click)="guardarPaquete()" [disabled]="guardandoPaquete">
+                {{ guardandoPaquete ? 'Guardando...' : 'Crear paquete' }}
+              </button>
+            </div>
+          </div>
         </div>
       }
 
