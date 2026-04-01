@@ -1,0 +1,61 @@
+<div class="detalle-wrap">
+  <div class="detalle-card">
+    @if (casa) {
+      <div class="estado-ok">Casa encontrada</div>
+
+      <div class="titulo">Detalle temporal de la casa</div>
+      <div class="sub">
+        Esta es una vista básica del primer sprint.
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="label">Código</span>
+          <span class="value">{{ casa.codigo }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Población</span>
+          <span class="value">{{ casa.poblacion }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Dormitorios</span>
+          <span class="value">{{ casa.numeroDormitorios }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Baños</span>
+          <span class="value">{{ casa.numeroBanos }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Cocinas</span>
+          <span class="value">{{ casa.numeroCocinas }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Comedores</span>
+          <span class="value">{{ casa.numeroComedores }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Garajes</span>
+          <span class="value">{{ casa.plazasGaraje }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Estado</span>
+          <span class="value">{{ casa.activa ? 'Activa' : 'Inactiva' }}</span>
+        </div>
+      </div>
+    } @else {
+      <div class="estado-error">Casa no encontrada</div>
+      <div class="titulo">{{ mensaje }}</div>
+    }
+
+    <div class="acciones">
+      <button class="btn-volver" (click)="volverDashboard()">Volver al dashboard</button>
+    </div>
+  </div>
+</div>

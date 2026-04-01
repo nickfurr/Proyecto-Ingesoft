@@ -60,13 +60,15 @@ export class DashboardPropietario implements OnInit {
   historico: HistoricoPaqueteDto[] = [];
   historicoFiltrado: HistoricoPaqueteDto[] = [];
 
-  // NUEVO
   mostrarFormularioPaquete = false;
   modoEdicionPaquete = false;
   paqueteEditandoId: number | null = null;
   guardandoPaquete = false;
   errorPaquete = '';
   exitoPaquete = '';
+
+  codigoBusquedaCasa = '';
+  errorBusquedaCasa = '';
 
   paqueteForm: PaqueteAlquilerDto = this.crearFormularioVacio();
 
@@ -81,6 +83,10 @@ export class DashboardPropietario implements OnInit {
       this.nombreAcronimo = this.nombrePropietario.slice(0, 2).toUpperCase();
 
       this.cargarInfoPropietario();
+      const panel = this.router.parseUrl(this.router.url).queryParams['panel'];
+      if (panel === 'casas') {
+        this.showPanel('casas');
+      }
     }
   }
 
@@ -403,5 +409,34 @@ export class DashboardPropietario implements OnInit {
       default:
         return 'estado-pendiente';
     }
+  }
+  buscarCasaPorCodigo(): void {
+    this.errorBusquedaCasa = '';
+
+    const codigo = Number(this.codigoBusquedaCasa);
+
+    if (!this.codigoBusquedaCasa.trim()) {
+      this.errorBusquedaCasa = 'Debes ingresar un código.';
+      return;
+    }
+
+    if (isNaN(codigo) || codigo <= 0) {
+      this.errorBusquedaCasa = 'El código debe ser numérico y mayor que cero.';
+      return;
+    }
+
+    const casaEncontrada = this.casas.find(casa => casa.codigo === codigo);
+
+    if (!casaEncontrada) {
+      this.errorBusquedaCasa = 'No se encontró una casa con ese código.';
+      return;
+    }
+
+    localStorage.setItem('casaDetalleTemporal', JSON.stringify(casaEncontrada));
+    this.router.navigate(['/detalle-casa', codigo]);
+  }
+  limpiarBusquedaCasa(): void {
+    this.codigoBusquedaCasa = '';
+    this.errorBusquedaCasa = '';
   }
 }

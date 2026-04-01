@@ -4,9 +4,9 @@ export interface HistoricoPaqueteDto {
   fechaInicio: string;
   fechaFin: string;
   modalidad: string;
-  precioCasaEntera: number;
-  precioPorHabitacion: number;
+  precioCasaEntera: number | null;
+  precioPorHabitacion: number | null;
   vigente: boolean;
   totalReservas: number;
-  ingresos: number;
+  ingresos: number | null;
 }

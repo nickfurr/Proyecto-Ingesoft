@@ -83,7 +83,22 @@
         <div class="panel active">
           <div>
             <div class="section-label">Casas registradas</div>
+            <div class="busqueda-casa-card">
+              <div class="section-label">Buscar casa por código</div>
 
+              <div class="busqueda-casa-row">
+                <input
+                  type="text"
+                  [(ngModel)]="codigoBusquedaCasa"
+                  placeholder="Ej: 101">
+                <button class="btn-search" (click)="buscarCasaPorCodigo()">Buscar</button>
+                <button class="btn-clear" (click)="limpiarBusquedaCasa()">Limpiar</button>
+              </div>
+
+              @if (errorBusquedaCasa) {
+                <div class="msg-error">{{ errorBusquedaCasa }}</div>
+              }
+            </div>
             @if (casas.length > 0) {
               <div class="casas-list">
                 @for (casa of casas; track casa.codigo) {

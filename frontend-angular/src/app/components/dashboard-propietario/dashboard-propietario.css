@@ -556,3 +556,46 @@
   font-size: 12px;
   color: #9a9aa0;
 }
+.busqueda-casa-card {
+  background: #1b1b1d;
+  border: 1px solid #2f2f33;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.busqueda-casa-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.busqueda-casa-row input {
+  flex: 1;
+  min-width: 220px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #33363d;
+  background: #222326;
+  color: #fff;
+}
+
+.btn-search,
+.btn-clear {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-search {
+  background: #185fa5;
+  color: #fff;
+}
+
+.btn-clear {
+  background: #35363a;
+  color: #f1f1f1;
+}
