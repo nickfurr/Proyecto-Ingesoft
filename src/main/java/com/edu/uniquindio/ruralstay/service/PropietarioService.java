@@ -1,7 +1,6 @@
 package com.edu.uniquindio.ruralstay.service;
 
 import com.edu.uniquindio.ruralstay.dto.PropietarioDTO;
-import com.edu.uniquindio.ruralstay.entity.Cliente;
 import com.edu.uniquindio.ruralstay.entity.Propietario;
 import com.edu.uniquindio.ruralstay.repository.PropietarioRepository;
 import org.springframework.stereotype.Service;

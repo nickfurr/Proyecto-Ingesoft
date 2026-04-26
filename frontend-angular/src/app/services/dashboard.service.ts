@@ -53,4 +53,9 @@ export class DashboardService {
   registrarPago(numeroReserva: number): Observable<ReservaDto> {
     return this.http.patch<ReservaDto>(`${this.apiReservas}/${numeroReserva}/registrar-pago`, {});
   }
+
+  actualizarReservaEstado(reservaDTO: ReservaDto): Observable<ReservaDto> {
+    return this.http.post<ReservaDto>(`${this.apiReservas}/actualizar-estado`, reservaDTO);
+  }
+
 }

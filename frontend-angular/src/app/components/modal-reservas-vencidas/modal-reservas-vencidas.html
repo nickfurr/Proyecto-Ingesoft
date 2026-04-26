@@ -1,0 +1,73 @@
+<div class="modal-overlay" *ngIf="mostrar" (click)="cerrarModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <h2 class="modal-title">Reservas Vencidas</h2>
+        <p class="modal-subtitle">Tienes {{ reservasVencidas.length }} reserva(s) que requieren atención</p>
+      </div>
+      <button class="btn-close" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <!-- Estado vacío -->
+      <div *ngIf="noHayReservas" class="estado-vacio">
+        <p class="texto-vacio">No hay reservas vencidas</p>
+      </div>
+
+      <!-- Lista de reservas -->
+      <div *ngIf="!noHayReservas" class="reservas-lista">
+        <div *ngFor="let reserva of reservasVencidas" class="reserva-item">
+          <div class="reserva-info">
+            <div class="reserva-numero">
+              <span class="etiqueta">Reserva #</span>
+              <span class="valor">{{ reserva.numeroReserva }}</span>
+            </div>
+            <div class="reserva-detalles">
+              <div class="detalle-row">
+                <span class="detalle-label">Entrada:</span>
+                <span class="detalle-valor">{{ reserva.fechaInicio | date: 'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detalle-row">
+                <span class="detalle-label">Monto Total:</span>
+                <span class="detalle-valor monto">{{ reserva.importeTotal | currency }}</span>
+              </div>
+              <div class="detalle-row">
+                <span class="detalle-label">Estado:</span>
+                <span class="estado-badge" [ngClass]="'estado-' + reserva.estadoPago">
+                  {{ reserva.estadoPago }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acciones -->
+          <div class="reserva-acciones">
+            <button
+              class="btn-accion btn-cancelar"
+              (click)="cancelarReserva(reserva.numeroReserva)"
+              [disabled]="procesando.has(reserva.numeroReserva)">
+              {{ procesando.has(reserva.numeroReserva) ? 'Procesando...' : 'Cancelar' }}
+            </button>
+            <button
+              class="btn-accion btn-mantener"
+              (click)="mantenerReserva(reserva.numeroReserva)"
+              [disabled]="procesando.has(reserva.numeroReserva)">
+              {{ procesando.has(reserva.numeroReserva) ? 'Procesando...' : 'Mantener' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
+      <div *ngIf="exitoMsg" class="msg-success">{{ exitoMsg }}</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="btn-cerrar" (click)="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>

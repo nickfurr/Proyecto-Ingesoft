@@ -25,4 +25,9 @@ public class ReservaController {
     public ReservaDTO registrarPago(@PathVariable Long numeroReserva) {
         return reservaService.registrarPago(numeroReserva);
     }
+
+    @PostMapping("/actualizar-estado")
+    public ReservaDTO actualizarReservaEstado(@RequestBody ReservaDTO reservaDTO) {
+        return reservaService.actualizarReservaEstado(reservaDTO);
+    }
 }

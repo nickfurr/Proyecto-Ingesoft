@@ -43,6 +43,22 @@ public class ReservaService {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+    
+
+    //actuqalizar estado de la reserva
+    public ReservaDTO actualizarReservaEstado(ReservaDTO reservaDTO) {
+        // Validar que la reserva exista
+        Reserva reserva = reservaRepository.findById(reservaDTO.getNumeroReserva())
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+
+        // Actualizar campos relevantes
+        reserva.setEstado(reservaDTO.getEstadoPago());
+
+        // Guardar cambios
+        Reserva reservaActualizada = reservaRepository.save(reserva);
+        // devolver DTO actualizado
+        return toDTO(reservaActualizada);
+    }
 
     @Transactional
     public ReservaDTO registrarPago(Long numeroReserva) {

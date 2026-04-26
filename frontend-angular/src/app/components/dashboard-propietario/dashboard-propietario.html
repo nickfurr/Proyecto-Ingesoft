@@ -447,3 +447,11 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Reservas Vencidas -->
+<app-modal-reservas-vencidas
+  [mostrar]="mostrarModalVencidas"
+  [reservasVencidas]="reservaTemporal || []"
+  (cerrar)="cerrarModalReservasVencidas()"
+  (accionReserva)="procesarAccionReservaVencida($event)">
+</app-modal-reservas-vencidas>
