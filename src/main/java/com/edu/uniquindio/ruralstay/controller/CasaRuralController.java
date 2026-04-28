@@ -18,7 +18,7 @@ public class CasaRuralController {
     }
 
     @GetMapping("/propietario/{propietarioId}")
-    public List<CasaRuralDTO> listarPorPropietario(@PathVariable Long propietarioId) {
+    public List<CasaRuralDTO> listarPorPropietario(@PathVariable("propietarioId") Long propietarioId) {
         return casaRuralService.listarPorPropietario(propietarioId);
     }
 }

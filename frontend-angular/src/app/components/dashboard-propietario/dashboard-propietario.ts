@@ -15,6 +15,7 @@ import { ModalReservasVencidas } from '../modal-reservas-vencidas/modal-reservas
   templateUrl: './dashboard-propietario.html',
   styleUrl: './dashboard-propietario.css'
 })
+
 export class DashboardPropietario implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
@@ -25,13 +26,21 @@ export class DashboardPropietario implements OnInit {
   exitoReserva = '';
   mostrarModalVencidas = false;
 
-  activePanel: 'reservas' | 'crearPaquete' | 'crearCasa' | 'info' | 'casas' | 'historico' = 'info';
+  activePanel: 'reservas' | 'crearPaquete' | 'crearCasa' | 'info' | 'casas' | 'historico' | 'buscarUsuario' = 'info';
 
   panelTitle = 'Mi información';
   panelSub = 'Datos personales y cuenta';
 
+  // — Búsqueda de usuarios —
+  searchUsername = '';
+  searchType: 'cliente' | 'propietario' = 'cliente';
+  searchResult: any = null;
+  searchError = '';
+  searchLoading = false;
+
   panelMeta = {
     info: { title: 'Mi información', sub: 'Datos personales y cuenta' },
+    buscarUsuario: { title: 'Buscar usuario', sub: 'Consulta por username' },
     casas: { title: 'Mis casas registradas', sub: 'Lista de propiedades activas' },
     historico: { title: 'Histórico de paquetes', sub: 'Consulta y filtra todos tus paquetes' },
     crearCasa: { title: 'Crear una nueva casa', sub: 'Llena cada campo para crear tu casa' },
@@ -201,7 +210,7 @@ export class DashboardPropietario implements OnInit {
     }
   }
 
-  showPanel(id: 'reservas' | 'info' | 'casas' | 'historico' | 'crearPaquete' | 'crearCasa'): void {
+  showPanel(id: 'reservas' | 'info' | 'casas' | 'historico' | 'crearPaquete' | 'crearCasa' | 'buscarUsuario'): void {
     this.activePanel = id;
     this.panelTitle = this.panelMeta[id].title;
     this.panelSub = this.panelMeta[id].sub;
@@ -482,6 +491,37 @@ export class DashboardPropietario implements OnInit {
         return 'estado-pendiente';
     }
   }
+
+  buscarUsuario(): void {
+    if (!this.searchUsername.trim()) return;
+    this.searchLoading = true;
+    this.searchResult = null;
+    this.searchError = '';
+
+    const obs = this.searchType === 'cliente'
+      ? this.dashboardService.buscarClientePorUsername(this.searchUsername.trim())
+      : this.dashboardService.buscarPropietarioPorUsername(this.searchUsername.trim());
+
+    obs.subscribe({
+      next: (data) => {
+        this.searchResult = data;
+        this.searchLoading = false;
+      },
+      error: () => {
+        this.searchError = this.searchType === 'cliente'
+          ? 'Cliente no encontrado'
+          : 'Propietario no encontrado';
+        this.searchLoading = false;
+      }
+    });
+  }
+
+  limpiarBusqueda(): void {
+    this.searchUsername = '';
+    this.searchResult = null;
+    this.searchError = '';
+  }
+
   buscarCasaPorCodigo(): void {
     this.errorBusquedaCasa = '';
 

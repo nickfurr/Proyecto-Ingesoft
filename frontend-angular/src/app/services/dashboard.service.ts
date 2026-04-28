@@ -58,4 +58,18 @@ export class DashboardService {
     return this.http.post<ReservaDto>(`${this.apiReservas}/actualizar-estado`, reservaDTO);
   }
 
+  private apiUsuarios = 'http://localhost:8080/api/v1/usuarios';
+
+  buscarClientePorUsername(username: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUsuarios}/buscar/cliente`, {
+      params: { username }
+    });
+  }
+
+  buscarPropietarioPorUsername(username: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUsuarios}/buscar/propietario`, {
+      params: { username }
+    });
+  }
+
 }

@@ -2,7 +2,6 @@ package com.edu.uniquindio.ruralstay.controller;
 
 import com.edu.uniquindio.ruralstay.dto.PropietarioDTO;
 import com.edu.uniquindio.ruralstay.entity.Propietario;
-import com.edu.uniquindio.ruralstay.repository.PropietarioRepository;
 import com.edu.uniquindio.ruralstay.service.PropietarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,7 @@ public class PropietarioController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
     }
     @GetMapping("/{id:[0-9]+}")
-    public ResponseEntity<PropietarioDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<PropietarioDTO> buscarPorId(@PathVariable("id") Long id) {
         System.out.println("buscando el propietario com id: " + id);
         return ResponseEntity.ok(propietarioService.buscrPorId(id));
     }

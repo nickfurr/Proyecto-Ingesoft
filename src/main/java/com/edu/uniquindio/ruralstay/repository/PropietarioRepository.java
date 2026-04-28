@@ -21,4 +21,6 @@ public interface PropietarioRepository extends JpaRepository<Propietario, Long> 
     Optional<Propietario> findByEmail(String email);
 
     Optional<Propietario> findById(Long id);
+
+    Optional<Propietario> findByUsername(String username);
 }

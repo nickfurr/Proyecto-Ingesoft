@@ -18,11 +18,11 @@ public class ReservaController {
     }
 
     @GetMapping("/propietario/{propietarioId}")
-    public List<ReservaDTO> listarPorPropietario(@PathVariable Long propietarioId) {
+    public List<ReservaDTO> listarPorPropietario(@PathVariable("propietarioId") Long propietarioId) {
         return reservaService.listarPorPropietario(propietarioId);
     }
     @PatchMapping("/{numeroReserva}/registrar-pago")
-    public ReservaDTO registrarPago(@PathVariable Long numeroReserva) {
+    public ReservaDTO registrarPago(@PathVariable("numeroReserva") Long numeroReserva) {
         return reservaService.registrarPago(numeroReserva);
     }
 

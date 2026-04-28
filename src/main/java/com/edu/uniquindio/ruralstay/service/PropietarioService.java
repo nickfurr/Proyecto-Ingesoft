@@ -15,7 +15,12 @@ public class PropietarioService {
     private final PropietarioRepository propietarioRepository;
 
     public PropietarioDTO login(@RequestBody PropietarioDTO solicitud) {
-        Optional<Propietario> propietarioOpt = propietarioRepository.findByEmail(solicitud.getEmail());
+        String identificador = solicitud.getEmail();
+        if (identificador == null || identificador.isBlank()) {
+            identificador = solicitud.getUsername();
+        }
+
+        Optional<Propietario> propietarioOpt = buscarPorIdentificador(identificador);
 
         if(propietarioOpt.isEmpty()){
             return new PropietarioDTO("Usuario no encontrado",0,null,
@@ -37,6 +42,20 @@ public class PropietarioService {
                 propietario.getNumeroCuentaBancaria(),
                 propietario.getActivo()
         );
+    }
+
+    private Optional<Propietario> buscarPorIdentificador(String identificador) {
+        if (identificador == null || identificador.isBlank()) {
+            return Optional.empty();
+        }
+
+        if (identificador.contains("@")) {
+            Optional<Propietario> porEmail = propietarioRepository.findByEmail(identificador);
+            return porEmail.isPresent() ? porEmail : propietarioRepository.findByUsername(identificador);
+        }
+
+        Optional<Propietario> porUsername = propietarioRepository.findByUsername(identificador);
+        return porUsername.isPresent() ? porUsername : propietarioRepository.findByEmail(identificador);
     }
 
     public PropietarioService(PropietarioRepository propietarioRepository) {
