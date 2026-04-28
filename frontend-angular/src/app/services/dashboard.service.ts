@@ -20,6 +20,19 @@ export class DashboardService {
     return this.http.get<CasaRuralDto[]>(`${this.apiCasas}/propietario/${propietarioId}`);
   }
 
+  buscarCasasDisponibles(fechaEntrada: string, fechaSalida: string): Observable<CasaRuralDto[]> {
+    return this.http.post<CasaRuralDto[]>(
+      `${this.apiCasas}/disponibles`,
+      {},
+      {
+        params: {
+          fechaEntrada,
+          fechaSalida
+        }
+      }
+    );
+  }
+
   obtenerReservasPorPropietario(propietarioId: number): Observable<ReservaDto[]> {
     return this.http.get<ReservaDto[]>(`${this.apiReservas}/propietario/${propietarioId}`);
   }

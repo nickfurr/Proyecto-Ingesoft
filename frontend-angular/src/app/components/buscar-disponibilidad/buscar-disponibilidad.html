@@ -1,0 +1,47 @@
+<div class="buscador-wrapper">
+  <div class="buscador-card">
+    <div class="card-header">
+      <div class="header-content">
+        <h2 class="card-title">Buscar casas disponibles</h2>
+        <p class="card-subtitle">Selecciona un rango de fechas para ver disponibilidad</p>
+      </div>
+      <div class="header-badge">Rango</div>
+    </div>
+
+    <form class="card-body" (ngSubmit)="onBuscar()" #form="ngForm">
+      <div class="campo-grid">
+        <label class="campo">
+          <span class="campo-label">Fecha de entrada</span>
+          <input
+            type="date"
+            name="fechaEntrada"
+            [(ngModel)]="fechaEntrada"
+            required
+          />
+        </label>
+
+        <label class="campo">
+          <span class="campo-label">Fecha de salida</span>
+          <input
+            type="date"
+            name="fechaSalida"
+            [(ngModel)]="fechaSalida"
+            [min]="fechaEntrada || null"
+            required
+          />
+        </label>
+      </div>
+
+      <div class="acciones">
+        <button class="btn-accion btn-primario" type="submit" [disabled]="loading">
+          {{ loading ? 'Buscando...' : 'Buscar disponibilidad' }}
+        </button>
+        <button class="btn-accion btn-secundario" type="button" (click)="onLimpiar()" [disabled]="loading">
+          Limpiar
+        </button>
+      </div>
+
+      <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
+    </form>
+  </div>
+</div>

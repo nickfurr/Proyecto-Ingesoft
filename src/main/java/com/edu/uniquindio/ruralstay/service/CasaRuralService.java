@@ -5,6 +5,7 @@ import com.edu.uniquindio.ruralstay.entity.CasaRural;
 import com.edu.uniquindio.ruralstay.repository.CasaRuralRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,6 +40,20 @@ public class CasaRuralService {
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    // Metodo para filtrar casas disponibles por fecha de entrada y salida
+    public CasaRuralDTO[] filtrarCasasDisponiblesRango(LocalDate fechaEntrada, LocalDate fechaSalida) {
+        // Implementar lógica para filtrar casas disponibles según las fechas
+        // Esto puede incluir verificar las reservas existentes para cada casa
+
+        List<CasaRural> disponibles = casaRuralRepository.findDisponiblesByRango(fechaEntrada, fechaSalida);
+
+        List<CasaRuralDTO> dtoList = disponibles.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+        System.out.println(disponibles);
+        return dtoList.toArray(new CasaRuralDTO[0]); // Retornar un arreglo de DTOs de casas disponibles
     }
 
     private CasaRuralDTO toDTO(CasaRural casa) {

@@ -21,4 +21,15 @@ public class CasaRuralController {
     public List<CasaRuralDTO> listarPorPropietario(@PathVariable("propietarioId") Long propietarioId) {
         return casaRuralService.listarPorPropietario(propietarioId);
     }
+
+    @PostMapping("/disponibles")
+    public CasaRuralDTO[] filtrarCasasDisponiblesRango(
+            @RequestParam("fechaEntrada") String fechaEntrada,
+            @RequestParam("fechaSalida") String fechaSalida) {
+        return casaRuralService.filtrarCasasDisponiblesRango(
+                java.time.LocalDate.parse(fechaEntrada),
+                java.time.LocalDate.parse(fechaSalida)
+        );
+    }
+
 }

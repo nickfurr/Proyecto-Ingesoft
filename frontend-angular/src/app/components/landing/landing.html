@@ -1,0 +1,78 @@
+<div class="landing">
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">RuralStay</div>
+      <h1 class="hero-title">Encuentra tu casa rural ideal</h1>
+      <p class="hero-subtitle">
+        Explora disponibilidad en tiempo real y reserva el lugar perfecto para tu proxima escapada.
+      </p>
+    </div>
+  </header>
+
+  <section class="buscador-section">
+    <app-buscar-disponibilidad
+      [loading]="loading"
+      (buscar)="onBuscar($event)"
+      (limpiar)="onLimpiar()">
+    </app-buscar-disponibilidad>
+  </section>
+
+  <section class="resultados">
+    <div class="section-header">
+      <h2 class="section-title">Casas disponibles</h2>
+      <p class="section-subtitle">Selecciona una opcion para ver mas detalles</p>
+    </div>
+
+    <div *ngIf="errorMsg" class="msg-error">{{ errorMsg }}</div>
+
+    <div *ngIf="!loading && busquedaActiva && casas.length === 0 && !errorMsg" class="estado-vacio">
+      <p>No hay casas disponibles para el rango seleccionado.</p>
+    </div>
+
+    <div *ngIf="loading" class="estado-cargando">
+      <div class="loader"></div>
+      <p>Buscando disponibilidad...</p>
+    </div>
+
+    <div class="cards-grid" *ngIf="!loading && casas.length > 0">
+      <article class="casa-card" *ngFor="let casa of casas">
+        <div class="casa-header">
+          <div>
+            <h3 class="casa-title">Casa #{{ casa.codigo }}</h3>
+            <p class="casa-sub">{{ casa.poblacion }}</p>
+          </div>
+          <span class="estado-badge" [class.inactiva]="!casa.activa">
+            {{ casa.activa ? 'Activa' : 'Inactiva' }}
+          </span>
+        </div>
+
+        <p class="casa-desc">{{ casa.descripcionGeneral }}</p>
+
+        <div class="casa-grid">
+          <div class="dato">
+            <span class="dato-label">Dormitorios</span>
+            <span class="dato-value">{{ casa.numeroDormitorios }}</span>
+          </div>
+          <div class="dato">
+            <span class="dato-label">Banos</span>
+            <span class="dato-value">{{ casa.numeroBanos }}</span>
+          </div>
+          <div class="dato">
+            <span class="dato-label">Cocinas</span>
+            <span class="dato-value">{{ casa.numeroCocinas }}</span>
+          </div>
+          <div class="dato">
+            <span class="dato-label">Comedores</span>
+            <span class="dato-value">{{ casa.numeroComedores }}</span>
+          </div>
+          <div class="dato">
+            <span class="dato-label">Garajes</span>
+            <span class="dato-value">{{ casa.plazasGaraje }}</span>
+          </div>
+        </div>
+
+        <button class="btn-ver" (click)="verDetalle(casa.codigo)">Ver detalle</button>
+      </article>
+    </div>
+  </section>
+</div>
