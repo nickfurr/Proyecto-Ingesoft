@@ -8,6 +8,7 @@ import { ReservaDto } from '../../models/reserva-dto';
 import { PaqueteAlquilerDto } from '../../models/paquete-alquiler-dto';
 import { HistoricoPaqueteDto } from '../../models/historico-paquete-dto';
 import { ModalReservasVencidas } from '../modal-reservas-vencidas/modal-reservas-vencidas';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard-propietario',
@@ -20,6 +21,7 @@ export class DashboardPropietario implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
   private dashboardService = inject(DashboardService);
+  private cdr = inject(ChangeDetectorRef);
 
   registrandoPagoReservaId: number | null = null;
   errorReserva = '';
@@ -506,12 +508,14 @@ export class DashboardPropietario implements OnInit {
       next: (data) => {
         this.searchResult = data;
         this.searchLoading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.searchError = this.searchType === 'cliente'
           ? 'Cliente no encontrado'
           : 'Propietario no encontrado';
         this.searchLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
