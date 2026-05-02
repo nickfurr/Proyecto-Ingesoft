@@ -1,0 +1,167 @@
+<div class="modal-container">
+  <!-- ESTADO: CARGANDO -->
+  <div *ngIf="cargando" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando información de la casa...</p>
+  </div>
+
+  <!-- ESTADO: ERROR -->
+  <div *ngIf="!cargando && mensaje" class="error-state">
+    <mat-icon>error_outline</mat-icon>
+    <p>{{ mensaje }}</p>
+  </div>
+
+  <!-- CONTENIDO: DETALLE DE CASA -->
+  <ng-container *ngIf="!cargando && casa">
+    <!-- HEADER CON CIERRE -->
+    <div class="modal-header">
+      <h2 class="modal-title">Detalle de la Casa</h2>
+    </div>
+
+    <!-- IMAGEN BANNER -->
+    <div class="banner-section">
+      <img [src]="imagenPlaceholder" alt="Casa rural" class="banner-image" />
+    </div>
+
+    <!-- SECCIÓN INFORMATIVA PRINCIPAL -->
+    <div class="info-section">
+      <div class="casa-info">
+        <!-- Descripción -->
+        <div class="descripcion-block">
+          <h3>Sobre esta casa</h3>
+          <p class="descripcion-text">{{ casa.descripcion }}</p>
+        </div>
+
+        <!-- Plazas de parqueo -->
+        <div class="amenity-row">
+          <mat-icon class="amenity-icon">local_parking</mat-icon>
+          <div>
+            <strong>Plazas de Parqueo:</strong>
+            <span class="amenity-value">{{ casa.plazasParqueo }}</span>
+          </div>
+        </div>
+
+        <!-- Información del propietario -->
+        <div class="owner-section">
+          <h4>Propietario</h4>
+          <div class="owner-info">
+            <div class="owner-item">
+              <mat-icon>person</mat-icon>
+              <div>
+                <strong>Nombre:</strong>
+                <p>{{ casa.propietario.nombreCompleto }}</p>
+              </div>
+            </div>
+            <div class="owner-item">
+              <mat-icon>email</mat-icon>
+              <div>
+                <strong>Email:</strong>
+                <p>{{ casa.propietario.email }}</p>
+              </div>
+            </div>
+            <div class="owner-item">
+              <mat-icon>phone</mat-icon>
+              <div>
+                <strong>Teléfono:</strong>
+                <p>{{ casa.propietario.telefono }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN INFERIOR - 3 COLUMNAS -->
+    <div class="features-section">
+      <!-- COLUMNA 1: COCINAS -->
+      <div class="column">
+        <h3 class="column-title">
+          <mat-icon>kitchen</mat-icon>
+          Cocinas
+        </h3>
+        <div class="items-list">
+          <div *ngIf="casa.cocinas.length === 0" class="empty-state">
+            <p>No hay cocinas registradas</p>
+          </div>
+          <div *ngFor="let cocina of casa.cocinas" class="item-card">
+            <div class="item-image">
+              <mat-icon>kitchen</mat-icon>
+            </div>
+            <div class="item-details">
+              <div class="item-row">
+                <mat-icon [class.icon-check]="cocina.tieneLavavajillas">{{ cocina.tieneLavavajillas ? 'check_circle' : 'cancel' }}</mat-icon>
+                <span>Lavavajillas: <strong>{{ cocina.tieneLavavajillas ? 'Sí' : 'No' }}</strong></span>
+              </div>
+              <div class="item-row">
+                <mat-icon [class.icon-check]="cocina.tieneLavadora">{{ cocina.tieneLavadora ? 'check_circle' : 'cancel' }}</mat-icon>
+                <span>Lavadora: <strong>{{ cocina.tieneLavadora ? 'Sí' : 'No' }}</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUMNA 2: HABITACIONES -->
+      <div class="column">
+        <h3 class="column-title">
+          <mat-icon>bed</mat-icon>
+          Habitaciones
+        </h3>
+        <div class="items-list">
+          <div *ngIf="casa.habitaciones.length === 0" class="empty-state">
+            <p>No hay habitaciones registradas</p>
+          </div>
+          <div *ngFor="let habitacion of casa.habitaciones" class="item-card">
+            <div class="item-image">
+              <mat-icon>bed</mat-icon>
+            </div>
+            <div class="item-details">
+              <div class="item-header">
+                <strong>Hab #{{ habitacion.codigo }}</strong>
+              </div>
+              <div class="item-row">
+                <span>Camas: <strong>{{ habitacion.numeroCamas }}</strong></span>
+              </div>
+              <div class="item-row">
+                <span>Tipo: <strong>{{ habitacion.tipoCama }}</strong></span>
+              </div>
+              <div class="item-row">
+                <mat-icon [class.icon-check]="habitacion.tieneBano">{{ habitacion.tieneBano ? 'check_circle' : 'cancel' }}</mat-icon>
+                <span>Baño: <strong>{{ habitacion.tieneBano ? 'Privado' : 'Compartido' }}</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUMNA 3: BAÑOS -->
+      <div class="column">
+        <h3 class="column-title">
+          <mat-icon>bathroom</mat-icon>
+          Baños
+        </h3>
+        <div class="items-list">
+          <div *ngIf="casa.banos.length === 0" class="empty-state">
+            <p>No hay baños registrados</p>
+          </div>
+          <div *ngFor="let bano of casa.banos" class="item-card">
+            <div class="item-image">
+              <mat-icon>bathroom</mat-icon>
+            </div>
+            <div class="item-details">
+              <div class="item-header">
+                <strong>Baño #{{ bano.id }}</strong>
+              </div>
+              <div class="item-row">
+                <mat-icon [class.icon-check]="!bano.compartido">{{ !bano.compartido ? 'check_circle' : 'cancel' }}</mat-icon>
+                <span>
+                  <strong>{{ bano.compartido ? 'Compartido' : 'Privado' }}</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
