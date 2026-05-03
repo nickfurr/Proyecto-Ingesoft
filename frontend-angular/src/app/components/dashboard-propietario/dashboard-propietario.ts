@@ -320,6 +320,92 @@ export class DashboardPropietario implements OnInit {
     });
   }
 
+  crearCasa(): void {
+    this.errorPaquete = '';
+    this.exitoPaquete = '';
+
+    const fotosFiltradas = this.fotosInputs
+      .map(f => f.trim())
+      .filter(f => f !== '');
+
+    if (!this.casaForm.poblacion || !this.casaForm.descripcionGeneral) {
+      this.errorPaquete = 'Población y descripción son obligatorias';
+      return;
+    }
+
+    const payload = {
+      ...this.casaForm,
+      propietarioId: this.propietarioId,
+      fotos: fotosFiltradas
+    };
+
+    this.dashboardService.crearCasa(payload).subscribe({
+      next: () => {
+        this.exitoPaquete = 'Casa creada correctamente';
+
+        // reset formulario
+        this.fotosInputs = [''];
+        this.casaForm = {
+          poblacion: '',
+          descripcionGeneral: '',
+          numeroDormitorios: 0,
+          numeroBanos: 0,
+          numeroCocinas: 0,
+          numeroComedores: 0,
+          plazasGaraje: 0,
+          propietarioId: 0,
+          fotos: []
+        };
+
+        this.cargarInfoPropietario();
+        this.showPanel('casas');
+      },
+      error: (err) => {
+        this.errorPaquete = err?.error?.message || 'Error al crear la casa';
+        console.error(err);
+      }
+    });
+  }
+
+  darDeBajaCasa(casaId: number): void {
+    this.errorPaquete = '';
+    this.exitoPaquete = '';
+
+    this.dashboardService.darDeBajaCasa(casaId, this.propietarioId).subscribe({
+      next: () => {
+        this.exitoPaquete = 'Casa dada de baja correctamente';
+
+        // 🔥 refrescar lista
+        this.cargarInfoPropietario();
+
+        // opcional: limpiar mensajes después de unos segundos
+        setTimeout(() => {
+          this.exitoPaquete = '';
+        }, 3000);
+      },
+      error: (err) => {
+        this.errorPaquete = err?.error?.message || 'Error al dar de baja la casa';
+        console.error(err);
+      }
+    });
+  }
+
+  confirmarDarDeBaja(casaId: number): void {
+    const confirmacion = confirm('¿Seguro que deseas dar de baja esta casa?');
+
+    if (!confirmacion) return;
+
+    this.darDeBajaCasa(casaId);
+  }
+
+  agregarFotoInput(): void {
+    this.fotosInputs.push('');
+  }
+
+  eliminarFotoInput(index: number): void {
+    this.fotosInputs.splice(index, 1);
+  }
+
   get totalPaquetes(): number {
     return this.historicoFiltrado.length;
   }
@@ -439,4 +525,19 @@ export class DashboardPropietario implements OnInit {
     this.codigoBusquedaCasa = '';
     this.errorBusquedaCasa = '';
   }
+
+  casaForm = {
+    poblacion: '',
+    descripcionGeneral: '',
+    numeroDormitorios: 0,
+    numeroBanos: 0,
+    numeroCocinas: 0,
+    numeroComedores: 0,
+    plazasGaraje: 0,
+    propietarioId: 0,
+    fotos: [] as string[]
+  };
+
+  // Agregar URLs de fotos
+  fotosInputs: string[] = [''];
 }

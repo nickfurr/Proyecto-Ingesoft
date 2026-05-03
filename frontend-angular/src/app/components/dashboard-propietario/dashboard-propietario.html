@@ -116,11 +116,22 @@
                       </div>
                     </div>
 
+                    <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+
                     <span
                       class="estado-badge"
                       [ngClass]="casa.activa ? 'estado-al_dia' : 'estado-vencido'">
                       {{ casa.activa ? 'Activa' : 'Inactiva' }}
                     </span>
+
+                      @if (casa.activa) {
+                        <button
+                        class="btn-delete"
+                        (click)="confirmarDarDeBaja(casa.codigo)">
+                          Dar de baja
+                        </button>
+                      }
+                    </div>
                   </div>
                 }
               </div>
@@ -296,7 +307,82 @@
 
       @if (activePanel === 'crearCasa') {
         <div class="panel active">
-          <div>Hola crear casa</div>
+          <div class="paquete-form-card">
+            <div class="section-label">Crear nueva casa</div>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Población</label>
+                <input [(ngModel)]="casaForm.poblacion">
+              </div>
+
+              <div class="form-field">
+                <label>Descripción</label>
+                <input [(ngModel)]="casaForm.descripcionGeneral">
+              </div>
+
+              <div class="form-field">
+                <label>Dormitorios</label>
+                <input type="number" [(ngModel)]="casaForm.numeroDormitorios">
+              </div>
+
+              <div class="form-field">
+                <label>Baños</label>
+                <input type="number" [(ngModel)]="casaForm.numeroBanos">
+              </div>
+
+              <div class="form-field">
+                <label>Cocinas</label>
+                <input type="number" [(ngModel)]="casaForm.numeroCocinas">
+              </div>
+
+              <div class="form-field">
+                <label>Comedores</label>
+                <input type="number" [(ngModel)]="casaForm.numeroComedores">
+              </div>
+
+              <div class="form-field">
+                <label>Garajes</label>
+                <input type="number" [(ngModel)]="casaForm.plazasGaraje">
+              </div>
+
+              <div class="form-field">
+                <label>Fotos (URLs)</label>
+
+                @for (foto of fotosInputs; track $index) {
+                  <div style="display:flex; gap:8px; margin-bottom:6px;">
+                    <input
+                      [(ngModel)]="fotosInputs[$index]"
+                      name="foto{{$index}}"
+                      placeholder="https://ejemplo.com/foto.jpg">
+
+                    @if (fotosInputs.length > 1) {
+                      <button type="button" class="btn-cancel" (click)="eliminarFotoInput($index)">
+                        X
+                      </button>
+                    }
+                  </div>
+                }
+
+                <button type="button" class="btn-filter" (click)="agregarFotoInput()">
+                  + Agregar otra foto
+                </button>
+              </div>
+            </div>
+
+
+            @if (errorPaquete) {
+              <div class="msg-error">{{ errorPaquete }}</div>
+            }
+
+            @if (exitoPaquete) {
+              <div class="msg-success">{{ exitoPaquete }}</div>
+            }
+
+            <div class="form-actions">
+              <button class="btn-save" (click)="crearCasa()">Crear casa</button>
+            </div>
+          </div>
         </div>
       }
 

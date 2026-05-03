@@ -1,4 +1,5 @@
 package com.edu.uniquindio.ruralstay.dto;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CasaRuralDTO {
-    private Long codigo;
+public class CrearCasaRuralDTO {
     private String poblacion;
     private String descripcionGeneral;
     private Integer numeroDormitorios;
@@ -19,7 +19,6 @@ public class CasaRuralDTO {
     private Integer numeroCocinas;
     private Integer numeroComedores;
     private Integer plazasGaraje;
-    private Boolean activa;
     private Long propietarioId;
     private List<String> fotos;
 }

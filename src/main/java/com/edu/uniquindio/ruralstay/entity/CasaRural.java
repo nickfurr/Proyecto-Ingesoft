@@ -62,4 +62,9 @@ public class CasaRural {
 
     @OneToMany(mappedBy = "casaRural")
     private List<Reserva> reservas;
+
+    @ElementCollection
+    @CollectionTable(name = "casaFotos", joinColumns = @JoinColumn(name = "casaId"))
+    @Column(name = "fotoUrl")
+    private List<String> fotos;
 }

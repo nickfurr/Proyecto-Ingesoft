@@ -1,6 +1,7 @@
 package com.edu.uniquindio.ruralstay.controller;
 
 import com.edu.uniquindio.ruralstay.dto.CasaRuralDTO;
+import com.edu.uniquindio.ruralstay.dto.CrearCasaRuralDTO;
 import com.edu.uniquindio.ruralstay.service.CasaRuralService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,5 +21,20 @@ public class CasaRuralController {
     @GetMapping("/propietario/{propietarioId}")
     public List<CasaRuralDTO> listarPorPropietario(@PathVariable Long propietarioId) {
         return casaRuralService.listarPorPropietario(propietarioId);
+    }
+
+    @GetMapping
+    public List<CasaRuralDTO> listarTodas() {
+        return casaRuralService.listarTodasDTO();
+    }
+
+    @PostMapping
+    public CasaRuralDTO crearCasa (@RequestBody CrearCasaRuralDTO dto) {
+        return casaRuralService.crearCasa(dto);
+    }
+
+    @DeleteMapping("/{casaId}/propietario/{propietarioId}")
+    public void eliminarCasa(@PathVariable Long casaId, @PathVariable Long propietarioId) {
+        casaRuralService.eliminarCasa(casaId, propietarioId);
     }
 }

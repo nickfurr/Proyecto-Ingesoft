@@ -53,4 +53,12 @@ export class DashboardService {
   registrarPago(numeroReserva: number): Observable<ReservaDto> {
     return this.http.patch<ReservaDto>(`${this.apiReservas}/${numeroReserva}/registrar-pago`, {});
   }
+
+  crearCasa(payload: any): Observable<any> {
+    return this.http.post(this.apiCasas, payload);
+  }
+
+  darDeBajaCasa(casaId: number, propietarioId: number): Observable<any> {
+    return this.http.delete(`${this.apiCasas}/${casaId}/propietario/${propietarioId}`);
+  }
 }
