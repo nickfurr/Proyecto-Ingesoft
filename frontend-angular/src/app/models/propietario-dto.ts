@@ -1,5 +1,5 @@
 export interface PropietarioDto{
-  descripcion: string;
+  description: string;
   id: number | null;
   username: string | null;
   password: string | null;

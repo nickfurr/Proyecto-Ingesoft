@@ -37,3 +37,6 @@ out/
 .vscode/
 # Archivos locales de Spring
 src/main/resources/application.properties
+# copilot instructions and agents
+.copilot/
+.agents/

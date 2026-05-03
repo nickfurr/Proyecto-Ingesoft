@@ -7,29 +7,42 @@ import { CasaRuralDto } from '../../models/casa-rural-dto';
 import { ReservaDto } from '../../models/reserva-dto';
 import { PaqueteAlquilerDto } from '../../models/paquete-alquiler-dto';
 import { HistoricoPaqueteDto } from '../../models/historico-paquete-dto';
+import { ModalReservasVencidas } from '../modal-reservas-vencidas/modal-reservas-vencidas';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard-propietario',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ModalReservasVencidas],
   templateUrl: './dashboard-propietario.html',
   styleUrl: './dashboard-propietario.css'
 })
+
 export class DashboardPropietario implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
   private dashboardService = inject(DashboardService);
+  private cdr = inject(ChangeDetectorRef);
 
   registrandoPagoReservaId: number | null = null;
   errorReserva = '';
   exitoReserva = '';
+  mostrarModalVencidas = false;
 
-  activePanel: 'reservas' | 'crearPaquete' | 'crearCasa' | 'info' | 'casas' | 'historico' = 'info';
+  activePanel: 'reservas' | 'crearPaquete' | 'crearCasa' | 'info' | 'casas' | 'historico' | 'buscarUsuario' = 'info';
 
   panelTitle = 'Mi información';
   panelSub = 'Datos personales y cuenta';
 
+  // — Búsqueda de usuarios —
+  searchUsername = '';
+  searchType: 'cliente' | 'propietario' = 'cliente';
+  searchResult: any = null;
+  searchError = '';
+  searchLoading = false;
+
   panelMeta = {
     info: { title: 'Mi información', sub: 'Datos personales y cuenta' },
+    buscarUsuario: { title: 'Buscar usuario', sub: 'Consulta por username' },
     casas: { title: 'Mis casas registradas', sub: 'Lista de propiedades activas' },
     historico: { title: 'Histórico de paquetes', sub: 'Consulta y filtra todos tus paquetes' },
     crearCasa: { title: 'Crear una nueva casa', sub: 'Llena cada campo para crear tu casa' },
@@ -51,6 +64,7 @@ export class DashboardPropietario implements OnInit {
 
   casas: CasaRuralDto[] = [];
   reservas: ReservaDto[] = [];
+  reservaTemporal: ReservaDto[] | null = [];
   paquetesActivosLista: PaqueteAlquilerDto[] = [];
 
   fechaDesde = '2024-01-01';
@@ -124,12 +138,81 @@ export class DashboardPropietario implements OnInit {
       next: (res) => {
         this.reservas = res;
         this.reservasTotales = res.length;
+        this.buscarReservasVencidas(); // Revisa si hay reservas vencidas al cargar la información del propietario
       },
       error: (err) => console.error('Error cargando reservas', err)
     });
   }
 
-  showPanel(id: 'reservas' | 'info' | 'casas' | 'historico' | 'crearPaquete' | 'crearCasa'): void {
+  // verifica reservas con el estado vendido y las guarda en reservaTemporal
+  buscarReservasVencidas(): void {
+    this.reservaTemporal = [];
+    
+    // Recorre todas las reservas y filtra las que están vencidas
+    this.reservas.forEach(reserva => {
+      if (reserva.estadoPago === 'VENCIDA') {
+        this.reservaTemporal!.push(reserva);
+      }
+    });
+
+    // Mostrar modal si hay reservas vencidas
+    if (this.reservaTemporal && this.reservaTemporal.length > 0) {
+      this.mostrarModalVencidas = true;
+    }
+  }
+
+  cerrarModalReservasVencidas(): void {
+    this.mostrarModalVencidas = false;
+  }
+
+  procesarAccionReservaVencida(evento: { numeroReserva: number; accion: 'cancelar' | 'mantener' }): void {
+    const { numeroReserva, accion } = evento;
+    
+    // Aquí puedes agregar lógica para cancelar o mantener la reserva
+    if (accion === 'cancelar') {
+      console.log('Cancelando reserva:', numeroReserva);
+      // Llamar al servicio para cancelar
+      //informacion dto de la reserva a cancelar
+      const reservaACancelar = this.reservas.find(r => r.numeroReserva === numeroReserva);
+      if (reservaACancelar) {
+        reservaACancelar.estadoPago = 'CANCELADA';
+        this.dashboardService.actualizarReservaEstado(reservaACancelar).subscribe({
+          next: (reservaActualizada) => {
+            this.reservas = this.reservas.map(item => item.numeroReserva === reservaActualizada.numeroReserva ? reservaActualizada : item);
+            console.log('Reserva cancelada:', reservaACancelar);
+          }
+        });
+      }
+    } else if (accion === 'mantener') {
+      console.log('Manteniendo reserva:', numeroReserva);
+      // Llamar al servicio para mantener/resolver
+      
+      // informacion dto de la reserva a mantener
+      const reservaAMantener = this.reservas.find(r => r.numeroReserva === numeroReserva);
+      if (reservaAMantener) {
+        reservaAMantener.estadoPago = 'PENDIENTE_PAGO';
+        this.dashboardService.actualizarReservaEstado(reservaAMantener).subscribe({
+          next: (reservaActualizada) => {
+            this.reservas = this.reservas.map(item => item.numeroReserva === reservaActualizada.numeroReserva ? reservaActualizada : item);
+            console.log('Reserva actualizada:', reservaActualizada);
+          }
+        });
+        console.log('Reserva mantenida:', reservaAMantener);
+      }
+    }
+
+    // Remover de la lista temporal
+    this.reservaTemporal = this.reservaTemporal?.filter(
+      r => r.numeroReserva !== numeroReserva
+    ) || [];
+
+    // Cerrar modal si no hay más reservas
+    if (!this.reservaTemporal || this.reservaTemporal.length === 0) {
+      this.mostrarModalVencidas = false;
+    }
+  }
+
+  showPanel(id: 'reservas' | 'info' | 'casas' | 'historico' | 'crearPaquete' | 'crearCasa' | 'buscarUsuario'): void {
     this.activePanel = id;
     this.panelTitle = this.panelMeta[id].title;
     this.panelSub = this.panelMeta[id].sub;
@@ -496,6 +579,39 @@ export class DashboardPropietario implements OnInit {
         return 'estado-pendiente';
     }
   }
+
+  buscarUsuario(): void {
+    if (!this.searchUsername.trim()) return;
+    this.searchLoading = true;
+    this.searchResult = null;
+    this.searchError = '';
+
+    const obs = this.searchType === 'cliente'
+      ? this.dashboardService.buscarClientePorUsername(this.searchUsername.trim())
+      : this.dashboardService.buscarPropietarioPorUsername(this.searchUsername.trim());
+
+    obs.subscribe({
+      next: (data) => {
+        this.searchResult = data;
+        this.searchLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.searchError = this.searchType === 'cliente'
+          ? 'Cliente no encontrado'
+          : 'Propietario no encontrado';
+        this.searchLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  limpiarBusqueda(): void {
+    this.searchUsername = '';
+    this.searchResult = null;
+    this.searchError = '';
+  }
+
   buscarCasaPorCodigo(): void {
     this.errorBusquedaCasa = '';
 
@@ -521,6 +637,9 @@ export class DashboardPropietario implements OnInit {
     localStorage.setItem('casaDetalleTemporal', JSON.stringify(casaEncontrada));
     this.router.navigate(['/detalle-casa', codigo]);
   }
+
+  // Filtro para buscar reversas vencidas
+
   limpiarBusquedaCasa(): void {
     this.codigoBusquedaCasa = '';
     this.errorBusquedaCasa = '';

@@ -21,16 +21,16 @@ public class PaqueteAlquilerController {
     @PostMapping
     public PaqueteAlquilerDTO crearPaquete(
             @RequestBody PaqueteAlquilerDTO dto,
-            @RequestParam Long propietarioId) {
+            @RequestParam("propietarioId") Long propietarioId) {
 
         return service.crearPaquete(dto, propietarioId);
     }
 
     @PutMapping("/{id}")
     public PaqueteAlquilerDTO modificarPaquete(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestBody PaqueteAlquilerDTO dto,
-            @RequestParam Long propietarioId) {
+            @RequestParam("propietarioId") Long propietarioId) {
 
         return service.modificarPaquete(id, dto, propietarioId);
     }
@@ -41,28 +41,28 @@ public class PaqueteAlquilerController {
     }
 
     @GetMapping("/{id}")
-    public PaqueteAlquiler obtener(@PathVariable Long id) {
+    public PaqueteAlquiler obtener(@PathVariable("id") Long id) {
         return service.buscarPorId(id).orElseThrow();
     }
 
     @GetMapping("/propietario/{propietarioId}/activos")
-    public List<PaqueteAlquilerDTO> listarActivosPorPropietario(@PathVariable Long propietarioId) {
+    public List<PaqueteAlquilerDTO> listarActivosPorPropietario(@PathVariable("propietarioId") Long propietarioId) {
         return service.listarActivosPorPropietario(propietarioId);
     }
 
     @GetMapping("/propietario/{propietarioId}/historico")
     public List<HistoricoPaqueteDTO> obtenerHistorico(
-            @PathVariable Long propietarioId,
-            @RequestParam LocalDate fechaInicio,
-            @RequestParam LocalDate fechaFin) {
+            @PathVariable("propietarioId") Long propietarioId,
+            @RequestParam("fechaInicio") LocalDate fechaInicio,
+            @RequestParam("fechaFin") LocalDate fechaFin) {
 
         return service.obtenerHistorico(propietarioId, fechaInicio, fechaFin);
     }
 
     @PutMapping("/{id}/desactivar")
     public void desactivarPaquete(
-            @PathVariable Long id,
-            @RequestParam Long propietarioId) {
+            @PathVariable("id") Long id,
+            @RequestParam("propietarioId") Long propietarioId) {
 
         service.desactivarPaquete(id, propietarioId);
     }

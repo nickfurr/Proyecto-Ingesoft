@@ -12,6 +12,10 @@
       Mi información
     </button>
 
+    <button class="nav-item" [class.active]="activePanel === 'buscarUsuario'" (click)="showPanel('buscarUsuario')">
+      Buscar usuario
+    </button>
+
     <button class="nav-item" [class.active]="activePanel === 'casas'" (click)="showPanel('casas')">
       Mis casas
     </button>
@@ -75,6 +79,57 @@
               <div class="stat-card"><div class="s-label">Paquetes activos</div><div class="s-value">{{ paquetesActivos }}</div></div>
               <div class="stat-card"><div class="s-label">Reservas totales</div><div class="s-value">{{ reservasTotales }}</div></div>
             </div>
+          </div>
+
+        </div>
+      }
+
+      @if (activePanel === 'buscarUsuario') {
+        <div class="panel active">
+          <div class="search-panel">
+            <div class="section-label">Buscar usuario por username</div>
+            <div class="search-radio-group">
+              <label class="radio-label">
+                <input type="radio" name="searchType" value="cliente" [(ngModel)]="searchType" />
+                Cliente
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="searchType" value="propietario" [(ngModel)]="searchType" />
+                Propietario
+              </label>
+            </div>
+
+            <div class="busqueda-casa-row">
+              <input
+                type="text"
+                placeholder="Ingrese el username..."
+                [(ngModel)]="searchUsername"
+                (keyup.enter)="buscarUsuario()">
+              <button class="btn-search" (click)="buscarUsuario()" [disabled]="searchLoading">
+                {{ searchLoading ? 'Buscando...' : 'Buscar' }}
+              </button>
+              <button class="btn-clear" (click)="limpiarBusqueda()">Limpiar</button>
+            </div>
+
+            @if (searchError) {
+              <div class="msg-error">{{ searchError }}</div>
+            }
+
+            @if (searchResult) {
+              <div class="search-result-card">
+                <div class="section-label">Resultado de búsqueda</div>
+                <div class="info-grid">
+                  <div class="info-card"><div class="label">ID</div><div class="value">{{ searchResult.id }}</div></div>
+                  <div class="info-card"><div class="label">Username</div><div class="value">{{ searchResult.username }}</div></div>
+                  <div class="info-card"><div class="label">Email</div><div class="value">{{ searchResult.email }}</div></div>
+                  <div class="info-card" *ngIf="searchType === 'cliente'"><div class="label">Teléfono</div><div class="value">{{ searchResult.telefonoContacto }}</div></div>
+                  <div class="info-card" *ngIf="searchType === 'propietario'"><div class="label">Nombre completo</div><div class="value">{{ searchResult.nombreCompleto }}</div></div>
+                  <div class="info-card" *ngIf="searchType === 'propietario'"><div class="label">Teléfono</div><div class="value">{{ searchResult.telefono }}</div></div>
+                  <div class="info-card" *ngIf="searchType === 'propietario'"><div class="label">Cuenta bancaria</div><div class="value">{{ searchResult.numeroCuentaBancaria }}</div></div>
+                  <div class="info-card" *ngIf="searchType === 'propietario'"><div class="label">Estado</div><div class="value active-dot">{{ searchResult.activo ? 'Activo' : 'Inactivo' }}</div></div>
+                </div>
+              </div>
+            }
           </div>
         </div>
       }
@@ -297,7 +352,7 @@
               <div class="form-actions">
                 <button class="btn-cancel" (click)="cerrarFormularioPaquete()">Cancelar</button>
                 <button class="btn-save" (click)="guardarPaquete()" [disabled]="guardandoPaquete">
-                  {{ guardandoPaquete ? 'Guardando...' : (modoEdicionPaquete ? 'Guardar cambios' : 'Crear paquete') }}
+                  {{ guardandoPaquete ? 'Guardado' : (modoEdicionPaquete ? 'Guardar cambios' : 'Crear paquete') }}
                 </button>
               </div>
             </div>
@@ -533,3 +588,11 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Reservas Vencidas -->
+<app-modal-reservas-vencidas
+  [mostrar]="mostrarModalVencidas"
+  [reservasVencidas]="reservaTemporal || []"
+  (cerrar)="cerrarModalReservasVencidas()"
+  (accionReserva)="procesarAccionReservaVencida($event)">
+</app-modal-reservas-vencidas>

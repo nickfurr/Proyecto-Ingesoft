@@ -1,0 +1,373 @@
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Container */
+.modal-container {
+  background: #1b1b1d;
+  border: 1px solid #2f2f33;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px;
+  border-bottom: 1px solid #2f2f33;
+  gap: 16px;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f5f5f5;
+  margin: 0 0 8px 0;
+}
+
+.modal-subtitle {
+  font-size: 13px;
+  color: #a8a8ad;
+  margin: 0;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: #a8a8ad;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-close:hover {
+  background: #2f2f33;
+  color: #f5f5f5;
+}
+
+/* Modal Body */
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Estado Vacío */
+.estado-vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.texto-vacio {
+  font-size: 14px;
+  color: #a8a8ad;
+  margin: 0;
+}
+
+/* Reservas Lista */
+.reservas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reserva-item {
+  background: #111214;
+  border: 1px solid #2f2f33;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease;
+}
+
+.reserva-item:hover {
+  border-color: #3a3a40;
+  background: #1b1b1d;
+}
+
+.reserva-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reserva-numero {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.etiqueta {
+  font-size: 12px;
+  color: #a8a8ad;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.valor {
+  font-size: 16px;
+  font-weight: 700;
+  color: #7db8ff;
+}
+
+.reserva-detalles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.detalle-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detalle-label {
+  color: #9a9aa0;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.detalle-valor {
+  color: #f5f5f5;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.detalle-valor.monto {
+  color: #7db8ff;
+  font-weight: 700;
+}
+
+.estado-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.estado-VENCIDA {
+  background: #3a2020;
+  color: #ffb5b5;
+}
+
+.estado-PENDIENTE_PAGO {
+  background: #3a3620;
+  color: #f2b84b;
+}
+
+.estado-PAGADA_PARCIAL {
+  background: #f2b84b33;
+  color: #f2b84b;
+}
+
+.estado-CONFIRMADA {
+  background: #1d9e7533;
+  color: #67d5ad;
+}
+
+.estado-CANCELADA {
+  background: #7a7a7a33;
+  color: #d0d0d0;
+}
+
+/* Acciones */
+.reserva-acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 220px;
+  justify-content: flex-end;
+}
+
+.btn-accion {
+  padding: 9px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+.btn-cancelar {
+  background: #3a2020;
+  color: #ffb5b5;
+  border: 1px solid #6d2d2d;
+}
+
+.btn-cancelar:hover:not(:disabled) {
+  background: #4a2a2a;
+  border-color: #8d3d3d;
+}
+
+.btn-mantener {
+  background: #0f6e56;
+  color: #e1f5ee;
+}
+
+.btn-mantener:hover:not(:disabled) {
+  background: #117e65;
+}
+
+.btn-accion:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mensajes */
+.msg-error {
+  background: #3a1f1f;
+  border: 1px solid #6d2d2d;
+  color: #ffb5b5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  animation: slideDown 0.3s ease;
+}
+
+.msg-success {
+  background: #173327;
+  border: 1px solid #2d6d4f;
+  color: #b8f5d5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal Footer */
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #2f2f33;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-cerrar {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #185fa5;
+  color: #f5f5f5;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cerrar:hover {
+  background: #1e6bb8;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .modal-container {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .modal-header {
+    padding: 16px;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .modal-footer {
+    padding: 12px 16px;
+  }
+
+  .reserva-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .reserva-acciones {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .reserva-detalles {
+    grid-template-columns: 1fr;
+  }
+}

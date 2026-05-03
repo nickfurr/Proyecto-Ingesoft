@@ -17,7 +17,7 @@
         <div class="mb-3">
           <label for="loginName" class="form-label">Correo o usuario</label>
           <input
-            type="email"
+            type="text"
             id="loginName"
             class="form-control"
             [(ngModel)]="email"
@@ -38,7 +38,7 @@
             id="loginPassword"
             class="form-control"
             [(ngModel)]="password"
-            name="email"
+            name="password"
             required
           />
           @if (errorMessage) {
@@ -46,6 +46,20 @@
               {{ errorMessage }}
             </div>
           }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Tipo de cuenta</label>
+          <div class="login-role-group">
+            <label class="role-option">
+              <input type="radio" name="loginType" value="cliente" [(ngModel)]="loginType" />
+              Cliente
+            </label>
+            <label class="role-option">
+              <input type="radio" name="loginType" value="propietario" [(ngModel)]="loginType" />
+              Propietario
+            </label>
+          </div>
         </div>
 
         <div class="row mb-4">
