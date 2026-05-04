@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -46,13 +47,13 @@ public class CasaRural {
     private Propietario propietario;
 
     @OneToMany(mappedBy = "casaRural", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Habitacion> habitaciones;
+    private Set<Habitacion> habitaciones;
 
     @OneToMany(mappedBy = "casaRural", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cocina> cocinas;
+    private Set<Cocina> cocinas;
 
     @OneToMany(mappedBy = "casaRural", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Baño> banos;
+    private Set<Baño> banos;
 
     @OneToMany(mappedBy = "casaRural", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PaqueteAlquiler> paquetesAlquiler;

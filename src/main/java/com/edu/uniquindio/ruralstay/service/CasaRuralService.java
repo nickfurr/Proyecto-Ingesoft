@@ -1,7 +1,6 @@
 package com.edu.uniquindio.ruralstay.service;
 
-import com.edu.uniquindio.ruralstay.dto.CasaRuralDTO;
-import com.edu.uniquindio.ruralstay.dto.CrearCasaRuralDTO;
+import com.edu.uniquindio.ruralstay.dto.*;
 import com.edu.uniquindio.ruralstay.entity.CasaRural;
 import com.edu.uniquindio.ruralstay.entity.Propietario;
 import com.edu.uniquindio.ruralstay.repository.CasaRuralRepository;
@@ -28,8 +27,9 @@ public class CasaRuralService {
         return casaRuralRepository.findAll();
     }
 
-    public Optional<CasaRural> buscarPorId(Long id) {
-        return casaRuralRepository.findById(id);
+    public Optional<CasaDetallDTO> buscarPorId(Long id) {
+        Optional<CasaRural> casa = casaRuralRepository.findCasaCompleta(id);
+        return casa.map(this::toCasaDetallDTO);
     }
 
     public CasaRural guardar(CasaRural casaRural) {
@@ -84,6 +84,58 @@ public class CasaRuralService {
                 casa.getPropietario().getId(),
                 casa.getFotos()
         );
+    }
+
+    private CasaDetallDTO toCasaDetallDTO(CasaRural casa) {
+        CasaDetallDTO dto = new CasaDetallDTO();
+        dto.setCodigo(casa.getCodigo());
+        dto.setPlazasParqueo(casa.getPlazasGaraje());
+        dto.setDescripcion(casa.getDescripcionGeneral());
+        
+        // Mapear propietario
+        Propietario propietario = casa.getPropietario();
+        PropietarioSimpleDTO propietarioDTO = new PropietarioSimpleDTO(
+                propietario.getId(),
+                propietario.getNombreCompleto(),
+                propietario.getEmail(),
+                propietario.getTelefono()
+        );
+        dto.setPropietario(propietarioDTO);
+        
+        // Mapear cocinas
+        if (casa.getCocinas() != null) {
+            dto.setCocinas(casa.getCocinas().stream()
+                    .map(cocina -> new CocinaDTO(
+                            cocina.getId(),
+                            cocina.getTieneLavavajillas(),
+                            cocina.getTieneLavadora()
+                    ))
+                    .collect(Collectors.toList()));
+        }
+        
+        // Mapear habitaciones
+        if (casa.getHabitaciones() != null) {
+            dto.setHabitaciones(casa.getHabitaciones().stream()
+                    .map(habitacion -> new HabitacionDTO(
+                            habitacion.getCodigo(),
+                            habitacion.getNumeroCamas(),
+                            habitacion.getTipoCama(),
+                            habitacion.getTieneBano()
+                    ))
+                    .collect(Collectors.toList()));
+        }
+        
+        // Mapear baños
+        if (casa.getBanos() != null) {
+            dto.setBanos(casa.getBanos().stream()
+                    .map(bano -> new BañoDTO(
+                            bano.getId(),
+                            bano.getCompartido()
+                    ))
+                    .collect(Collectors.toList()));
+        }
+        
+        return dto;
     }
 
     public CasaRuralDTO crearCasa(CrearCasaRuralDTO dto) {

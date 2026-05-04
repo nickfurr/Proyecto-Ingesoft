@@ -1,8 +1,10 @@
 package com.edu.uniquindio.ruralstay.controller;
 
+import com.edu.uniquindio.ruralstay.dto.CasaDetallDTO;
 import com.edu.uniquindio.ruralstay.dto.CasaRuralDTO;
 import com.edu.uniquindio.ruralstay.dto.CrearCasaRuralDTO;
 import com.edu.uniquindio.ruralstay.service.CasaRuralService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +23,14 @@ public class CasaRuralController {
     @GetMapping("/propietario/{propietarioId}")
     public List<CasaRuralDTO> listarPorPropietario(@PathVariable("propietarioId") Long propietarioId) {
         return casaRuralService.listarPorPropietario(propietarioId);
+    }
+
+    @GetMapping("/detalle/{id}")
+    public ResponseEntity<CasaDetallDTO> obtenerDetalleCasa(@PathVariable("id") Long id) {
+        System.out.println("entro y respondio" + casaRuralService.buscarPorId(id).toString());
+        return casaRuralService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/disponibles")
