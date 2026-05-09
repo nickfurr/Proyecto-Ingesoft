@@ -22,4 +22,6 @@ public class CasaRuralDTO {
     private Boolean activa;
     private Long propietarioId;
     private List<String> fotos;
+    private String ciudad;
+    private Double precio;
 }

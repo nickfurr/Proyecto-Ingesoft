@@ -82,7 +82,9 @@ public class CasaRuralService {
                 casa.getPlazasGaraje(),
                 casa.getActiva(),
                 casa.getPropietario().getId(),
-                casa.getFotos()
+                casa.getFotos(),
+                casa.getCiudad(),
+                casa.getPrecio()
         );
     }
 
@@ -161,6 +163,10 @@ public class CasaRuralService {
         // Creación de la casa rural
         CasaRural casa = new CasaRural();
         casa.setPoblacion(dto.getPoblacion());
+        // agregados
+        casa.setCiudad(dto.getCiudad());
+        casa.setPrecio(dto.getPrecio());
+
         casa.setDescripcionGeneral(dto.getDescripcionGeneral());
         casa.setNumeroDormitorios(dto.getNumeroDormitorios());
         casa.setNumeroBanos(dto.getNumeroBanos());
@@ -185,5 +191,28 @@ public class CasaRuralService {
 
         casa.setActiva(false); // Simplemente se desactiva
         casaRuralRepository.save(casa);
+    }
+
+    public List<CasaRuralDTO> filtrarCasas(FiltroDTO filtro) {
+
+        if (
+                filtro.getPrecioMin() != null &&
+                        filtro.getPrecioMax() != null &&
+                        filtro.getPrecioMin() > filtro.getPrecioMax()
+        ) {
+            throw new RuntimeException(
+                    "El precio mínimo no puede ser mayor al máximo"
+            );
+        }
+
+        List<CasaRural> casas = casaRuralRepository.filtrarCasas(
+                filtro.getCiudad(),
+                filtro.getPrecioMin(),
+                filtro.getPrecioMax()
+        );
+
+        return casas.stream()
+                .map(this::toDTO)
+                .toList();
     }
 }

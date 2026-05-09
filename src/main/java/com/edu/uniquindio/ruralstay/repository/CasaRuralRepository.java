@@ -37,4 +37,33 @@ public interface CasaRuralRepository extends JpaRepository<CasaRural, Long> {
             WHERE c.codigo = :id
             """)
     Optional<CasaRural> findCasaCompleta(@Param("id") Long id);
+
+
+    // decirle a carlos que en la historia de usuario 13 le falto el precio y la ciudad
+// las cuales se agregaron nuevas para las historias de usuario 10 y 11
+
+    @Query("""
+        SELECT c FROM CasaRural c
+        WHERE (:min IS NULL OR c.precio >= :min)
+        AND (:max IS NULL OR c.precio <= :max)
+    """)
+    List<CasaRural> filtrarPorPrecio(
+            @Param("min") Double min,
+            @Param("max") Double max
+    );
+
+    List<CasaRural> findByCiudadIgnoreCase(String ciudad);
+
+    // Filtro completo
+    @Query("""
+        SELECT c FROM CasaRural c
+        WHERE (:ciudad IS NULL OR LOWER(c.ciudad) = LOWER(:ciudad))
+        AND (:min IS NULL OR c.precio >= :min)
+        AND (:max IS NULL OR c.precio <= :max)
+    """)
+    List<CasaRural> filtrarCasas(
+            @Param("ciudad") String ciudad,
+            @Param("min") Double min,
+            @Param("max") Double max
+    );
 }

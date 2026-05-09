@@ -41,6 +41,12 @@ public class CasaRural {
     @Column(nullable = false)
     private Boolean activa;
 
+    @Column(nullable = false)
+    private Double precio;
+
+    @Column(nullable = false)
+    private String ciudad;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "propietario_id")
     @JsonBackReference

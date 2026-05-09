@@ -21,4 +21,7 @@ public class CrearCasaRuralDTO {
     private Integer plazasGaraje;
     private Long propietarioId;
     private List<String> fotos;
+
+    private String ciudad;
+    private Double precio;
 }
