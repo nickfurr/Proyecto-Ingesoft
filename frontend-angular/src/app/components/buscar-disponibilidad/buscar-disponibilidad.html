@@ -10,6 +10,39 @@
 
     <form class="card-body" (ngSubmit)="onBuscar()" #form="ngForm">
       <div class="campo-grid">
+
+        <label class="campo">
+          <span class="campo-label">Ciudad</span>
+          <input
+            type="text"
+            name="ciudad"
+            [(ngModel)]="ciudad"
+            placeholder="Ej: Armenia"
+          />
+        </label>
+
+        <label class="campo">
+          <span class="campo-label">Precio mínimo</span>
+          <input
+            type="number"
+            name="precioMin"
+            [(ngModel)]="precioMin"
+            min="0"
+            placeholder="0"
+          />
+        </label>
+
+        <label class="campo">
+          <span class="campo-label">Precio máximo</span>
+          <input
+            type="number"
+            name="precioMax"
+            [(ngModel)]="precioMax"
+            min="0"
+            placeholder="50000000"
+          />
+        </label>
+
         <label class="campo">
           <span class="campo-label">Fecha de entrada</span>
           <input
