@@ -9,4 +9,6 @@ export interface CasaRuralDto {
   plazasGaraje: number;
   activa: boolean;
   propietarioId: number;
+  ciudad: string;
+  precio: number;
 }

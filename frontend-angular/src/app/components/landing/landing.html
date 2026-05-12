@@ -40,6 +40,7 @@
           <div>
             <h3 class="casa-title">Casa #{{ casa.codigo }}</h3>
             <p class="casa-sub">{{ casa.poblacion }}</p>
+            <p class="casa-sub">{{ casa.ciudad }}</p>
           </div>
           <span class="estado-badge" [class.inactiva]="!casa.activa">
             {{ casa.activa ? 'Activa' : 'Inactiva' }}
@@ -68,6 +69,10 @@
           <div class="dato">
             <span class="dato-label">Garajes</span>
             <span class="dato-value">{{ casa.plazasGaraje }}</span>
+          </div>
+          <div class="dato">
+            <span class="dato-label">Precio</span>
+            <span class="dato-value">{{ casa.precio | currency:'COP':'symbol':'1.0-0' }}</span>
           </div>
         </div>
 

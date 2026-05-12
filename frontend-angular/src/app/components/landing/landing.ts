@@ -29,7 +29,13 @@ export class Landing {
   errorMsg = '';
   busquedaActiva = false;
 
-  onBuscar(params: { fechaEntrada: string; fechaSalida: string }): void {
+  onBuscar(params: {
+    fechaEntrada: string;
+    fechaSalida: string;
+    ciudad?: string;
+    precioMin?: number;
+    precioMax?: number;
+  }): void {
     this.errorMsg = '';
     this.loading = true;
     this.busquedaActiva = true;
@@ -44,7 +50,37 @@ export class Landing {
       .subscribe({
         next: (data) => {
           console.log('Casas disponibles:', data);
-          this.casas = data ?? [];
+
+          let casasFiltradas = data ?? [];
+
+          // Filtrar por ciudad
+          if (params.ciudad && params.ciudad.trim() !== '') {
+
+            casasFiltradas = casasFiltradas.filter(casa =>
+              casa.ciudad?.toLowerCase()
+                .includes(params.ciudad!.toLowerCase())
+            );
+
+          }
+          // Filtrar por precio mínimo
+          if (params.precioMin != null) {
+
+            casasFiltradas = casasFiltradas.filter(casa =>
+              casa.precio >= params.precioMin!
+            );
+
+          }
+          // Filtrar por precio máximo
+          if (params.precioMax != null) {
+
+            casasFiltradas = casasFiltradas.filter(casa =>
+              casa.precio <= params.precioMax!
+            );
+
+          }
+
+          this.casas = casasFiltradas;
+
         },
         error: () => {
           this.errorMsg = 'No se pudo cargar la disponibilidad. Intenta de nuevo.';
