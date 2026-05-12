@@ -10,6 +10,34 @@ import { HistoricoPaqueteDto } from '../../models/historico-paquete-dto';
 import { ModalReservasVencidas } from '../modal-reservas-vencidas/modal-reservas-vencidas';
 import { ChangeDetectorRef } from '@angular/core';
 
+interface HabitacionForm {
+  numeroCamas: number;
+  tipoCama: string;
+  tieneBano: boolean;
+}
+
+interface BanoForm {
+  compartido: boolean;
+}
+
+interface CocinaForm {
+  tieneLavadora: boolean;
+  tieneLavavajillas: boolean;
+}
+
+interface CasaForm {
+  poblacion: string;
+  descripcionGeneral: string;
+  numeroComedores: number;
+  plazasGaraje: number;
+  propietarioId: number;
+  fotos: string[];
+
+  habitaciones: HabitacionForm[];
+  banos: BanoForm[];
+  cocinas: CocinaForm[];
+}
+
 @Component({
   selector: 'app-dashboard-propietario',
   imports: [CommonModule, FormsModule, ModalReservasVencidas],
@@ -84,6 +112,8 @@ export class DashboardPropietario implements OnInit {
   codigoBusquedaCasa = '';
   errorBusquedaCasa = '';
 
+  fotosInputs: string[] = [''];
+
   paqueteForm: PaqueteAlquilerDto = this.crearFormularioVacio();
 
   ngOnInit(): void {
@@ -147,7 +177,7 @@ export class DashboardPropietario implements OnInit {
   // verifica reservas con el estado vendido y las guarda en reservaTemporal
   buscarReservasVencidas(): void {
     this.reservaTemporal = [];
-    
+
     // Recorre todas las reservas y filtra las que están vencidas
     this.reservas.forEach(reserva => {
       if (reserva.estadoPago === 'VENCIDA') {
@@ -167,7 +197,7 @@ export class DashboardPropietario implements OnInit {
 
   procesarAccionReservaVencida(evento: { numeroReserva: number; accion: 'cancelar' | 'mantener' }): void {
     const { numeroReserva, accion } = evento;
-    
+
     // Aquí puedes agregar lógica para cancelar o mantener la reserva
     if (accion === 'cancelar') {
       console.log('Cancelando reserva:', numeroReserva);
@@ -186,7 +216,7 @@ export class DashboardPropietario implements OnInit {
     } else if (accion === 'mantener') {
       console.log('Manteniendo reserva:', numeroReserva);
       // Llamar al servicio para mantener/resolver
-      
+
       // informacion dto de la reserva a mantener
       const reservaAMantener = this.reservas.find(r => r.numeroReserva === numeroReserva);
       if (reservaAMantener) {
@@ -422,6 +452,8 @@ export class DashboardPropietario implements OnInit {
       fotos: fotosFiltradas
     };
 
+    console.log(JSON.stringify(payload, null, 2));
+
     this.dashboardService.crearCasa(payload).subscribe({
       next: () => {
         this.exitoPaquete = 'Casa creada correctamente';
@@ -431,13 +463,44 @@ export class DashboardPropietario implements OnInit {
         this.casaForm = {
           poblacion: '',
           descripcionGeneral: '',
-          numeroDormitorios: 0,
-          numeroBanos: 0,
-          numeroCocinas: 0,
           numeroComedores: 0,
           plazasGaraje: 0,
           propietarioId: 0,
-          fotos: []
+          fotos: [],
+
+          habitaciones: [
+            {
+              numeroCamas: 1,
+              tipoCama: 'SENCILLA',
+              tieneBano: false
+            },
+            {
+              numeroCamas: 1,
+              tipoCama: 'SENCILLA',
+              tieneBano: false
+            },
+            {
+              numeroCamas: 1,
+              tipoCama: 'SENCILLA',
+              tieneBano: false
+            }
+          ],
+
+          banos: [
+            {
+              compartido: true
+            },
+            {
+              compartido: true
+            }
+          ],
+
+          cocinas: [
+            {
+              tieneLavadora: false,
+              tieneLavavajillas: false
+            }
+          ]
         };
 
         this.cargarInfoPropietario();
@@ -487,6 +550,51 @@ export class DashboardPropietario implements OnInit {
 
   eliminarFotoInput(index: number): void {
     this.fotosInputs.splice(index, 1);
+  }
+
+  actualizarHabitaciones(cantidad: number): void {
+    cantidad = Number(cantidad);
+
+    while (this.casaForm.habitaciones.length < cantidad) {
+      this.casaForm.habitaciones.push({
+        numeroCamas: 1,
+        tipoCama: 'SENCILLA',
+        tieneBano: false
+      });
+    }
+
+    while (this.casaForm.habitaciones.length > cantidad) {
+      this.casaForm.habitaciones.pop();
+    }
+  }
+
+  actualizarBanos(cantidad: number): void {
+    cantidad = Number(cantidad);
+
+    while (this.casaForm.banos.length < cantidad) {
+      this.casaForm.banos.push({
+        compartido: true
+      });
+    }
+
+    while (this.casaForm.banos.length > cantidad) {
+      this.casaForm.banos.pop();
+    }
+  }
+
+  actualizarCocinas(cantidad: number): void {
+    cantidad = Number(cantidad);
+
+    while (this.casaForm.cocinas.length < cantidad) {
+      this.casaForm.cocinas.push({
+        tieneLavadora: false,
+        tieneLavavajillas: false
+      });
+    }
+
+    while (this.casaForm.cocinas.length > cantidad) {
+      this.casaForm.cocinas.pop();
+    }
   }
 
   get totalPaquetes(): number {
@@ -645,18 +753,46 @@ export class DashboardPropietario implements OnInit {
     this.errorBusquedaCasa = '';
   }
 
-  casaForm = {
+  casaForm: CasaForm = {
     poblacion: '',
     descripcionGeneral: '',
-    numeroDormitorios: 0,
-    numeroBanos: 0,
-    numeroCocinas: 0,
     numeroComedores: 0,
     plazasGaraje: 0,
     propietarioId: 0,
-    fotos: [] as string[]
-  };
+    fotos: [],
 
-  // Agregar URLs de fotos
-  fotosInputs: string[] = [''];
+    habitaciones: [
+      {
+        numeroCamas: 1,
+        tipoCama: 'SENCILLA',
+        tieneBano: false
+      },
+      {
+        numeroCamas: 1,
+        tipoCama: 'SENCILLA',
+        tieneBano: false
+      },
+      {
+        numeroCamas: 1,
+        tipoCama: 'SENCILLA',
+        tieneBano: false
+      }
+    ],
+
+    banos: [
+      {
+        compartido: true
+      },
+      {
+        compartido: true
+      }
+    ],
+
+    cocinas: [
+      {
+        tieneLavadora: false,
+        tieneLavavajillas: false
+      }
+    ]
+  };
 }

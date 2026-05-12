@@ -378,17 +378,17 @@
 
               <div class="form-field">
                 <label>Dormitorios</label>
-                <input type="number" [(ngModel)]="casaForm.numeroDormitorios">
+                <input type="number" min="3" [ngModel]="casaForm.habitaciones.length" (ngModelChange)="actualizarHabitaciones($event)">
               </div>
 
               <div class="form-field">
                 <label>Baños</label>
-                <input type="number" [(ngModel)]="casaForm.numeroBanos">
+                <input type="number" min="2" [ngModel]="casaForm.banos.length" (ngModelChange)="actualizarBanos($event)">
               </div>
 
               <div class="form-field">
                 <label>Cocinas</label>
-                <input type="number" [(ngModel)]="casaForm.numeroCocinas">
+                <input type="number" min="1" [ngModel]="casaForm.cocinas.length" (ngModelChange)="actualizarCocinas($event)">
               </div>
 
               <div class="form-field">

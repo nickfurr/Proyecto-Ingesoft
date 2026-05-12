@@ -14,9 +14,9 @@ import java.util.List;
 public class CrearCasaRuralDTO {
     private String poblacion;
     private String descripcionGeneral;
-    private Integer numeroDormitorios;
-    private Integer numeroBanos;
-    private Integer numeroCocinas;
+    private List<HabitacionDTO> habitaciones;
+    private List<BañoDTO> banos;
+    private List<CocinaDTO> cocinas;
     private Integer numeroComedores;
     private Integer plazasGaraje;
     private Long propietarioId;

@@ -1,15 +1,17 @@
 package com.edu.uniquindio.ruralstay.service;
 
 import com.edu.uniquindio.ruralstay.dto.*;
-import com.edu.uniquindio.ruralstay.entity.CasaRural;
-import com.edu.uniquindio.ruralstay.entity.Propietario;
+import com.edu.uniquindio.ruralstay.entity.*;
 import com.edu.uniquindio.ruralstay.repository.CasaRuralRepository;
 import com.edu.uniquindio.ruralstay.repository.PropietarioRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -93,7 +95,7 @@ public class CasaRuralService {
         dto.setCodigo(casa.getCodigo());
         dto.setPlazasParqueo(casa.getPlazasGaraje());
         dto.setDescripcion(casa.getDescripcionGeneral());
-        
+
         // Mapear propietario
         Propietario propietario = casa.getPropietario();
         PropietarioSimpleDTO propietarioDTO = new PropietarioSimpleDTO(
@@ -103,7 +105,7 @@ public class CasaRuralService {
                 propietario.getTelefono()
         );
         dto.setPropietario(propietarioDTO);
-        
+
         // Mapear cocinas
         if (casa.getCocinas() != null) {
             dto.setCocinas(casa.getCocinas().stream()
@@ -114,7 +116,7 @@ public class CasaRuralService {
                     ))
                     .collect(Collectors.toList()));
         }
-        
+
         // Mapear habitaciones
         if (casa.getHabitaciones() != null) {
             dto.setHabitaciones(casa.getHabitaciones().stream()
@@ -126,7 +128,7 @@ public class CasaRuralService {
                     ))
                     .collect(Collectors.toList()));
         }
-        
+
         // Mapear baños
         if (casa.getBanos() != null) {
             dto.setBanos(casa.getBanos().stream()
@@ -136,25 +138,29 @@ public class CasaRuralService {
                     ))
                     .collect(Collectors.toList()));
         }
-        
+
         return dto;
     }
 
     public CasaRuralDTO crearCasa(CrearCasaRuralDTO dto) {
         // Validaciones necesarias
-        if (dto.getNumeroCocinas() == null || dto.getNumeroCocinas() < 1) {
+        if (dto.getCocinas() == null || dto.getCocinas().isEmpty()) {
             throw new RuntimeException("Debe tener al menos 1 cocina");
         }
 
-        if (dto.getNumeroDormitorios() == null ||dto.getNumeroDormitorios() < 3) {
+        if (dto.getHabitaciones() == null || dto.getHabitaciones().size() < 3) {
             throw new RuntimeException("Debe tener al menos 3 dormitorios");
         }
 
-        if (dto.getNumeroBanos() == null ||dto.getNumeroBanos() < 2) {
+        if (dto.getBanos() == null || dto.getBanos().size() < 2) {
             throw new RuntimeException("Debe tener al menos 2 baños");
         }
 
-        Propietario propietario = propietarioRepository.findById(dto.getPropietarioId()) .orElseThrow(() -> new RuntimeException("Propietario no encontrado"));
+        Propietario propietario = propietarioRepository.findById(dto.getPropietarioId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Propietario no existe con ID: " + dto.getPropietarioId()
+                ));
 
         if (!propietario.getActivo()) {
             throw new RuntimeException("El propietario no está activo");
@@ -168,9 +174,9 @@ public class CasaRuralService {
         casa.setPrecio(dto.getPrecio());
 
         casa.setDescripcionGeneral(dto.getDescripcionGeneral());
-        casa.setNumeroDormitorios(dto.getNumeroDormitorios());
-        casa.setNumeroBanos(dto.getNumeroBanos());
-        casa.setNumeroCocinas(dto.getNumeroCocinas());
+        casa.setNumeroDormitorios(dto.getHabitaciones().size());
+        casa.setNumeroBanos(dto.getBanos().size());
+        casa.setNumeroCocinas(dto.getCocinas().size());
         casa.setNumeroComedores(dto.getNumeroComedores());
         casa.setPlazasGaraje(dto.getPlazasGaraje());
         casa.setFotos(dto.getFotos());
@@ -178,6 +184,69 @@ public class CasaRuralService {
 
         // Asociar el propietario a la casa rural creada
         casa.setPropietario(propietario);
+
+        // =========================
+        // HABITACIONES
+        // =========================
+
+        Set<Habitacion> habitaciones = dto.getHabitaciones()
+                .stream()
+                .map(hDto -> {
+
+                    Habitacion habitacion = new Habitacion();
+
+                    habitacion.setNumeroCamas(hDto.getNumeroCamas());
+                    habitacion.setTipoCama(hDto.getTipoCama());
+                    habitacion.setTieneBano(hDto.getTieneBano());
+
+                    habitacion.setCasaRural(casa);
+
+                    return habitacion;
+
+                }).collect(Collectors.toSet());
+
+        casa.setHabitaciones(habitaciones);
+
+        // =========================
+        // BAÑOS
+        // =========================
+
+        Set<Baño> banos = dto.getBanos()
+                .stream()
+                .map(bDto -> {
+
+                    Baño bano = new Baño();
+
+                    bano.setCompartido(bDto.getCompartido());
+
+                    bano.setCasaRural(casa);
+
+                    return bano;
+
+                }).collect(Collectors.toSet());
+
+        casa.setBanos(banos);
+
+        // =========================
+        // COCINAS
+        // =========================
+
+        Set<Cocina> cocinas = dto.getCocinas()
+                .stream()
+                .map(cDto -> {
+
+                    Cocina cocina = new Cocina();
+
+                    cocina.setTieneLavadora(cDto.getTieneLavadora());
+                    cocina.setTieneLavavajillas(cDto.getTieneLavavajillas());
+
+                    cocina.setCasaRural(casa);
+
+                    return cocina;
+
+                }).collect(Collectors.toSet());
+
+        casa.setCocinas(cocinas);
 
         CasaRural casaGuardada = casaRuralRepository.save(casa);
 
