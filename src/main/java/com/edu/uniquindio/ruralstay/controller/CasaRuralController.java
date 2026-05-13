@@ -28,7 +28,6 @@ public class CasaRuralController {
 
     @GetMapping("/detalle/{id}")
     public ResponseEntity<CasaDetallDTO> obtenerDetalleCasa(@PathVariable("id") Long id) {
-        System.out.println("entro y respondio" + casaRuralService.buscarPorId(id).toString());
         return casaRuralService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

@@ -11,4 +11,5 @@ export interface CasaDetallDto {
   cocinas: CocinaDto[];
   habitaciones: HabitacionDto[];
   banos: BanoDto[];
+  fotos?: string[];
 }

@@ -18,11 +18,6 @@
       <h2 class="modal-title">Detalle de la Casa</h2>
     </div>
 
-    <!-- IMAGEN BANNER -->
-    <div class="banner-section">
-      <img [src]="imagenPlaceholder" alt="Casa rural" class="banner-image" />
-    </div>
-
     <!-- SECCIÓN INFORMATIVA PRINCIPAL -->
     <div class="info-section">
       <div class="casa-info">
@@ -161,6 +156,29 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- GALERÍA DE IMÁGENES -->
+    <div class="gallery-section">
+      <h3 class="gallery-title">Galería de Imágenes</h3>
+      <div class="gallery-container">
+        @if (!tieneImagenes) {
+          <div class="empty-state">
+            <p>No hay imágenes disponibles</p>
+          </div>
+        }
+        @if (tieneImagenes) {
+          <div class="gallery-grid">
+            @for (foto of imagenes; track $index; let i = $index) {
+              <img 
+                [src]="foto" 
+                [alt]="'Foto ' + (i + 1) + ' de la casa'"
+                class="gallery-image"
+              />
+            }
+          </div>
+        }
       </div>
     </div>
   </ng-container>

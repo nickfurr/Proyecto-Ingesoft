@@ -34,6 +34,7 @@ public interface CasaRuralRepository extends JpaRepository<CasaRural, Long> {
             LEFT JOIN FETCH c.cocinas
             LEFT JOIN FETCH c.habitaciones
             LEFT JOIN FETCH c.banos
+            LEFT JOIN FETCH c.fotos
             WHERE c.codigo = :id
             """)
     Optional<CasaRural> findCasaCompleta(@Param("id") Long id);

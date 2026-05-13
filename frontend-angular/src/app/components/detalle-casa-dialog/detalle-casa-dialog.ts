@@ -14,13 +14,48 @@ import { CasaRuralService } from '../../services/casa-rural.service';
 export class DetalleCasaDialog implements OnInit {
   private casaRuralService = inject(CasaRuralService);
   private cdr = inject(ChangeDetectorRef);
+  private readonly backendBaseUrl = 'http://localhost:8080';
 
   casa: CasaDetallDto | null = null;
-  imagenPlaceholder = 'https://via.placeholder.com/800x400?text=Casa+Rural';
+  fotos: string[] = [];
   mensaje: string = '';
   cargando: boolean = true;
 
   constructor(@Inject(MAT_DIALOG_DATA) public casaId: number) {}
+
+  get tieneImagenes(): boolean {
+    return this.fotos && this.fotos.length > 0;
+  }
+
+  get imagenes(): string[] {
+    return this.fotos || [];
+  }
+
+  private normalizarFotoUrl(url: string): string {
+    const valor = (url || '').trim();
+
+    if (!valor) {
+      return '';
+    }
+
+    if (valor.startsWith('http://') || valor.startsWith('https://') || valor.startsWith('data:image/')) {
+      return valor;
+    }
+
+    if (valor.startsWith('//')) {
+      return `https:${valor}`;
+    }
+
+    if (valor.startsWith('www.')) {
+      return `https://${valor}`;
+    }
+
+    if (valor.startsWith('/')) {
+      return `${this.backendBaseUrl}${valor}`;
+    }
+
+    return `${this.backendBaseUrl}/${valor}`;
+  }
 
   ngOnInit(): void {
     if (this.casaId) {
@@ -29,8 +64,15 @@ export class DetalleCasaDialog implements OnInit {
         next: (data) => {
           console.log('Detalle de casa obtenido:', data);
           this.casa = data;
+          this.fotos = Array.from(
+            new Set((data.fotos || [])
+              .map((foto) => this.normalizarFotoUrl(foto))
+              .filter((foto) => foto.length > 0))
+          );
           this.cargando = false;
           this.cdr.markForCheck();
+          console.log('Fotos cargadas:', this.fotos);
+          console.log('Total de fotos:', this.fotos.length);
         },
         error: (error) => {
           console.error('Error al obtener detalles de la casa:', error);

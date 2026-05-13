@@ -139,6 +139,14 @@ public class CasaRuralService {
                     .collect(Collectors.toList()));
         }
 
+        // Mapear fotos
+        if (casa.getFotos() != null) {
+            dto.setFotos(casa.getFotos().stream()
+                    .filter(foto -> foto != null && !foto.isBlank())
+                    .distinct()
+                    .collect(Collectors.toList()));
+        }
+
         return dto;
     }
 

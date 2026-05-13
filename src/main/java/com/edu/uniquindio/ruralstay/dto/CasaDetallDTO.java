@@ -19,4 +19,5 @@ public class CasaDetallDTO {
     private List<CocinaDTO> cocinas;
     private List<HabitacionDTO> habitaciones;
     private List<BañoDTO> banos;
+    private List<String> fotos;
 }
