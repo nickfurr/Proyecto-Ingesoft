@@ -1,0 +1,110 @@
+.navbar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 56px;
+  background: #204C7C;
+  border-bottom: 1px solid #2f2f33;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.brand-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.logout-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f5f5f5;
+  letter-spacing: 0.02em;
+}
+
+.navbar-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-tab {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-tab:hover {
+  background: #50a2f3;
+  color: #f5f5f5;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-greeting {
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.btn-login-nav {
+  background: #185fa5;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-login-nav:hover {
+  background: #50a2f3;
+}
+
+.btn-logout-nav {
+  background: #b32e2e;
+  border: 1px solid #2f2f33;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-logout-nav:hover {
+  background: #ff2929;
+  color: #ffffff;
+}

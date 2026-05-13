@@ -19,4 +19,8 @@ export class LoginService {
   loginCliente(data: ClienteDto): Observable<ClienteDto> {
     return this.http.post<ClienteDto>(`${this.apiClientes}/login-cliente`, data);
   }
+
+  registrarPropietario(data: PropietarioDto): Observable<PropietarioDto> {
+    return this.http.post<PropietarioDto>(`${this.apiUrl}/registro`, data);
+  }
 }

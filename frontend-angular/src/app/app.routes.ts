@@ -7,7 +7,8 @@ import { Landing } from './components/landing/landing';
 import {DetalleCasaDialog} from './components/detalle-casa-dialog/detalle-casa-dialog';
 
 export const routes: Routes = [
-  { path: '', component: Login },
+  { path: '', component: Landing },
+  { path: 'login', component: Login },
   { path: 'landing', component: Landing },
   { path: 'dashboard-propietario', component: DashboardPropietario },
   { path: 'dashboard-client', component: DashboardClient },

@@ -1,6 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { BuscarDisponibilidad } from '../buscar-disponibilidad/buscar-disponibilidad';
@@ -8,19 +7,19 @@ import { DashboardService } from '../../services/dashboard.service';
 import { CasaRuralService } from '../../services/casa-rural.service';
 import { CasaRuralDto } from '../../models/casa-rural-dto';
 import { DetalleCasaDialog } from '../detalle-casa-dialog/detalle-casa-dialog';
+import { Navbar } from '../navbar/navbar';
 import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [CommonModule, BuscarDisponibilidad, MatDialogModule, MatButtonModule],
+  imports: [CommonModule, BuscarDisponibilidad, MatDialogModule, MatButtonModule, Navbar],
   templateUrl: './landing.html',
   styleUrl: './landing.css'
 })
 export class Landing {
   private dashboardService = inject(DashboardService);
   private casaRuralService = inject(CasaRuralService);
-  private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
 
@@ -115,4 +114,5 @@ export class Landing {
       }
     });
   }
+
 }

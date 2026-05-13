@@ -36,9 +36,19 @@ public class PropietarioController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
     }
+
     @GetMapping("/{id:[0-9]+}")
     public ResponseEntity<PropietarioDTO> buscarPorId(@PathVariable("id") Long id) {
         System.out.println("buscando el propietario com id: " + id);
         return ResponseEntity.ok(propietarioService.buscrPorId(id));
+    }
+
+    @PostMapping("/registro")
+    public ResponseEntity<PropietarioDTO> registro(@RequestBody PropietarioDTO solicitud) {
+        PropietarioDTO respuesta = propietarioService.registrar(solicitud);
+        if ("Registro exitoso".equals(respuesta.getDescription())) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(respuesta);
     }
 }

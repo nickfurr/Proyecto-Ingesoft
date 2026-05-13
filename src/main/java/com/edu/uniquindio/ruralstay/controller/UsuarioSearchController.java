@@ -46,7 +46,7 @@ public class UsuarioSearchController {
         Optional<Propietario> propietarioOpt = propietarioRepository.findByUsername(username);
         if (propietarioOpt.isEmpty()) {
             return ResponseEntity.status(404).body(
-                    new PropietarioDTO("Propietario no encontrado", 0, null,
+                    new PropietarioDTO("Propietario no encontrado", null, null,
                             null, null, null, null, null, null));
         }
         Propietario propietario = propietarioOpt.get();

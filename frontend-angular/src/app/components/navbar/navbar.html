@@ -1,0 +1,24 @@
+<nav class="navbar-top">
+  <div class="navbar-left">
+    <div class="navbar-brand" (click)="irAInicio()">
+      <img class="brand-icon" src="/assets/images/home.png" alt="home" />
+      <span class="brand-name">Rural Stay</span>
+    </div>
+    <div class="navbar-tabs">
+      <button class="nav-tab" (click)="irAInicio()">Inicio</button>
+      @if (estaAutenticado) {
+        <button class="nav-tab" (click)="irAPanel()">Mi panel</button>
+      }
+    </div>
+  </div>
+  <div class="navbar-right">
+    @if (estaAutenticado) {
+      <span class="navbar-greeting">¡Hola, {{ nombreUsuario }}!</span>
+      <button class="btn-logout-nav" (click)="cerrarSesion()">
+        <img class="logout-icon" src="/assets/images/logout.png" alt="logout">
+      </button>
+    } @else {
+      <button class="btn-login-nav" (click)="irALogin()">Iniciar sesión</button>
+    }
+  </div>
+</nav>

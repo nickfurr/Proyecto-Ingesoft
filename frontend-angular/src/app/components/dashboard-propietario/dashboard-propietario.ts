@@ -8,6 +8,7 @@ import { ReservaDto } from '../../models/reserva-dto';
 import { PaqueteAlquilerDto } from '../../models/paquete-alquiler-dto';
 import { HistoricoPaqueteDto } from '../../models/historico-paquete-dto';
 import { ModalReservasVencidas } from '../modal-reservas-vencidas/modal-reservas-vencidas';
+import { Navbar } from '../navbar/navbar';
 import { ChangeDetectorRef } from '@angular/core';
 
 interface HabitacionForm {
@@ -42,7 +43,7 @@ interface CasaForm {
 
 @Component({
   selector: 'app-dashboard-propietario',
-  imports: [CommonModule, FormsModule, ModalReservasVencidas],
+  imports: [CommonModule, FormsModule, ModalReservasVencidas, Navbar],
   templateUrl: './dashboard-propietario.html',
   styleUrl: './dashboard-propietario.css'
 })
@@ -268,6 +269,12 @@ export class DashboardPropietario implements OnInit {
       localStorage.clear();
     }
     this.router.navigate(['/']);
+  }
+  irLanding(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.clear();
+    }
+    this.router.navigate(['/landing']);
   }
 
   filtrarHistorico(): void {

@@ -23,12 +23,12 @@ public class PropietarioService {
         Optional<Propietario> propietarioOpt = buscarPorIdentificador(identificador);
 
         if(propietarioOpt.isEmpty()){
-            return new PropietarioDTO("Usuario no encontrado",0,null,
+            return new PropietarioDTO("Usuario no encontrado",null,null,
                     null,null,null,null,null,null);
         }
         Propietario propietario = propietarioOpt.get();
         if(!propietario.getPassword().equals(solicitud.getPassword())){
-            return new PropietarioDTO("Contraseña incorrecta",0,null,
+            return new PropietarioDTO("Contraseña incorrecta",null,null,
                     null,null,null,null,null,null);
         }
         return new PropietarioDTO(
@@ -81,6 +81,33 @@ public class PropietarioService {
                 propietario.getNumeroCuentaBancaria(),
                 propietario.getActivo()
         );
+    }
+
+    public PropietarioDTO registrar(PropietarioDTO solicitud) {
+        if (solicitud.getUsername() == null || solicitud.getUsername().isBlank()) {
+            return new PropietarioDTO("El nombre de usuario es obligatorio", null, null, null, null, null, null, null, null);
+        }
+        if (propietarioRepository.findByUsername(solicitud.getUsername()).isPresent()) {
+            return new PropietarioDTO("El nombre de usuario ya está en uso", null, null, null, null, null, null, null, null);
+        }
+        if (solicitud.getEmail() != null && !solicitud.getEmail().isBlank()
+                && propietarioRepository.findByEmail(solicitud.getEmail()).isPresent()) {
+            return new PropietarioDTO("El correo electrónico ya está en uso", null, null, null, null, null, null, null, null);
+        }
+
+        Propietario propietario = new Propietario();
+        propietario.setUsername(solicitud.getUsername());
+        propietario.setPassword(solicitud.getPassword());
+        propietario.setEmail(solicitud.getEmail());
+        propietario.setNombreCompleto(solicitud.getNombreCompleto() != null ? solicitud.getNombreCompleto() : solicitud.getUsername());
+        propietario.setTelefono(solicitud.getTelefono() != null ? solicitud.getTelefono() : "");
+        propietario.setNumeroCuentaBancaria(solicitud.getNumeroCuentaBancaria() != null ? solicitud.getNumeroCuentaBancaria() : "");
+        propietario.setActivo(true);
+
+        Propietario saved = propietarioRepository.save(propietario);
+        return new PropietarioDTO("Registro exitoso", saved.getId(), saved.getUsername(), null,
+                saved.getEmail(), saved.getNombreCompleto(), saved.getTelefono(),
+                saved.getNumeroCuentaBancaria(), saved.getActivo());
     }
 
     public Propietario guardar(Propietario propietario) {

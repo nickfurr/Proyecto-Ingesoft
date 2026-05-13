@@ -3,11 +3,12 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DashboardService } from '../../services/dashboard.service';
+import { Navbar } from '../navbar/navbar';
 import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard-client',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Navbar],
   templateUrl: './dashboard-client.html',
   styleUrl: './dashboard-client.css'
 })

@@ -4,87 +4,184 @@
 
       <ul class="nav nav-pills nav-justified mb-4">
         <li class="nav-item">
-          <a class="nav-link active" href="#">Login</a>
+          <a class="nav-link" [class.active]="activeTab === 'login'" (click)="setTab('login')" href="javascript:void(0)">Login</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Register</a>
+          <a class="nav-link" [class.active]="activeTab === 'register'" (click)="setTab('register')" href="javascript:void(0)">Registro</a>
         </li>
       </ul>
 
-      <form (ngSubmit)="login()">
-        <h3 class="text-center mb-4">Iniciar sesión</h3>
+      <!-- ====== Formulario de Login ====== -->
+      @if (activeTab === 'login') {
+        <form (ngSubmit)="login()">
+          <h3 class="text-center mb-4">Iniciar sesión</h3>
 
-        <div class="mb-3">
-          <label for="loginName" class="form-label">Correo o usuario</label>
-          <input
-            type="text"
-            id="loginName"
-            class="form-control"
-            [(ngModel)]="email"
-            name="email"
-            required
-          />
-          @if (errorMessage) {
-            <div class="alert alert-danger">
-              {{ errorMessage }}
-            </div>
-          }
-        </div>
-
-        <div class="mb-3">
-          <label for="loginPassword" class="form-label">Contraseña</label>
-          <input
-            type="password"
-            id="loginPassword"
-            class="form-control"
-            [(ngModel)]="password"
-            name="password"
-            required
-          />
-          @if (errorMessage) {
-            <div class="alert alert-danger">
-              {{ errorMessage }}
-            </div>
-          }
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Tipo de cuenta</label>
-          <div class="login-role-group">
-            <label class="role-option">
-              <input type="radio" name="loginType" value="cliente" [(ngModel)]="loginType" />
-              Cliente
-            </label>
-            <label class="role-option">
-              <input type="radio" name="loginType" value="propietario" [(ngModel)]="loginType" />
-              Propietario
-            </label>
+          <div class="mb-3">
+            <label for="loginName" class="form-label">Correo o usuario</label>
+            <input
+              type="text"
+              id="loginName"
+              class="form-control"
+              [(ngModel)]="email"
+              name="email"
+              required
+            />
           </div>
-        </div>
 
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="loginCheck" checked />
-              <label class="form-check-label" for="loginCheck">
-                Recordarme
+          <div class="mb-3">
+            <label for="loginPassword" class="form-label">Contraseña</label>
+            <input
+              type="password"
+              id="loginPassword"
+              class="form-control"
+              [(ngModel)]="password"
+              name="password"
+              required
+            />
+          </div>
+
+          @if (errorMessage) {
+            <div class="alert alert-danger mb-3">{{ errorMessage }}</div>
+          }
+
+          <div class="mb-3">
+            <label class="form-label">Tipo de cuenta</label>
+            <div class="login-role-group">
+              <label class="role-option">
+                <input type="radio" name="loginType" value="cliente" [(ngModel)]="loginType" />
+                Cliente
+              </label>
+              <label class="role-option">
+                <input type="radio" name="loginType" value="propietario" [(ngModel)]="loginType" />
+                Propietario
               </label>
             </div>
           </div>
 
-          <div class="col-md-6 text-md-end mt-2 mt-md-0">
-            <a href="#">¿Olvidaste tu contraseña?</a>
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="loginCheck" checked />
+                <label class="form-check-label" for="loginCheck">Recordarme</label>
+              </div>
+            </div>
+            <div class="col-md-6 text-md-end mt-2 mt-md-0">
+              <a href="#">¿Olvidaste tu contraseña?</a>
+            </div>
           </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary w-100 mb-3">
-          Ingresar
-        </button>
+          <button type="submit" class="btn btn-primary w-100 mb-3" [disabled]="cargando">
+            {{ cargando ? 'Ingresando...' : 'Ingresar' }}
+          </button>
 
-        <div class="text-center">
-          <p class="mb-0">¿No tienes cuenta? <a href="#">Regístrate</a></p>
-        </div>
-      </form>
+          <div class="text-center">
+            <p class="mb-0">¿No tienes cuenta? <a href="javascript:void(0)" (click)="setTab('register')">Regístrate</a></p>
+          </div>
+        </form>
+      }
+
+      <!-- ====== Formulario de Registro (Propietario) ====== -->
+      @if (activeTab === 'register') {
+        <form (ngSubmit)="registrar()">
+          <h3 class="text-center mb-4">Registro de Propietario</h3>
+
+          <div class="mb-3">
+            <label for="regUsername" class="form-label">Nombre de usuario <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              id="regUsername"
+              class="form-control"
+              [(ngModel)]="regUsername"
+              name="regUsername"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="regEmail" class="form-label">Correo electrónico <span class="text-danger">*</span></label>
+            <input
+              type="email"
+              id="regEmail"
+              class="form-control"
+              [(ngModel)]="regEmail"
+              name="regEmail"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="regPassword" class="form-label">Contraseña <span class="text-danger">*</span></label>
+            <input
+              type="password"
+              id="regPassword"
+              class="form-control"
+              [(ngModel)]="regPassword"
+              name="regPassword"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="regConfirmPassword" class="form-label">Confirmar contraseña <span class="text-danger">*</span></label>
+            <input
+              type="password"
+              id="regConfirmPassword"
+              class="form-control"
+              [(ngModel)]="regConfirmPassword"
+              name="regConfirmPassword"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="regNombreCompleto" class="form-label">Nombre completo</label>
+            <input
+              type="text"
+              id="regNombreCompleto"
+              class="form-control"
+              [(ngModel)]="regNombreCompleto"
+              name="regNombreCompleto"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="regTelefono" class="form-label">Teléfono</label>
+            <input
+              type="text"
+              id="regTelefono"
+              class="form-control"
+              [(ngModel)]="regTelefono"
+              name="regTelefono"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="regCuentaBancaria" class="form-label">Número de cuenta bancaria</label>
+            <input
+              type="text"
+              id="regCuentaBancaria"
+              class="form-control"
+              [(ngModel)]="regCuentaBancaria"
+              name="regCuentaBancaria"
+            />
+          </div>
+
+          @if (regErrorMessage) {
+            <div class="alert alert-danger mb-3">{{ regErrorMessage }}</div>
+          }
+          @if (regSuccessMessage) {
+            <div class="alert alert-success mb-3">{{ regSuccessMessage }}</div>
+          }
+
+          <button type="submit" class="btn btn-success w-100 mb-3" [disabled]="regCargando">
+            {{ regCargando ? 'Registrando...' : 'Crear cuenta' }}
+          </button>
+
+          <div class="text-center">
+            <p class="mb-0">¿Ya tienes cuenta? <a href="javascript:void(0)" (click)="setTab('login')">Inicia sesión</a></p>
+          </div>
+        </form>
+      }
 
     </div>
   </div>
