@@ -27,6 +27,8 @@ interface CocinaForm {
 
 interface CasaForm {
   poblacion: string;
+  ciudad: string;
+  precio: number;
   descripcionGeneral: string;
   numeroComedores: number;
   plazasGaraje: number;
@@ -462,6 +464,8 @@ export class DashboardPropietario implements OnInit {
         this.fotosInputs = [''];
         this.casaForm = {
           poblacion: '',
+          ciudad: '',
+          precio: 0,
           descripcionGeneral: '',
           numeroComedores: 0,
           plazasGaraje: 0,
@@ -755,6 +759,8 @@ export class DashboardPropietario implements OnInit {
 
   casaForm: CasaForm = {
     poblacion: '',
+    ciudad: '',
+    precio: 0,
     descripcionGeneral: '',
     numeroComedores: 0,
     plazasGaraje: 0,

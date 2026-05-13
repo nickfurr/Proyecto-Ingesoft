@@ -372,6 +372,19 @@
               </div>
 
               <div class="form-field">
+                <label>Ciudad</label>
+                <input [(ngModel)]="casaForm.ciudad">
+              </div>
+
+              <div class="form-field">
+                <label>Precio por noche</label>
+                <input
+                  type="number"
+                  min="0"
+                  [(ngModel)]="casaForm.precio">
+              </div>
+
+              <div class="form-field">
                 <label>Descripción</label>
                 <input [(ngModel)]="casaForm.descripcionGeneral">
               </div>
