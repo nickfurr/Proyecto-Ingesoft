@@ -122,7 +122,7 @@ class GestionReservaTest {
     void testConfirmarPagoInicialReserva() {
         // Arrange
         BigDecimal montoAnticipo = new BigDecimal("75.00");
-        when(reservaRepository.findByNumeroReserva(1L)).thenReturn(reserva1);
+        when(reservaRepository.findByNumeroReserva(1L)).thenReturn(Optional.of(reserva1));
         when(reservaRepository.save(any(Reserva.class))).thenReturn(reserva1);
 
         // Act
@@ -139,7 +139,7 @@ class GestionReservaTest {
     void testConfirmarPagoInicialReservaNoExiste() {
         // Arrange
         BigDecimal montoAnticipo = new BigDecimal("75.00");
-        when(reservaRepository.findByNumeroReserva(100L)).thenReturn(null);
+        when(reservaRepository.findByNumeroReserva(100L)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () -> 
@@ -153,7 +153,7 @@ class GestionReservaTest {
     void testConfirmarPagoInicialReservaPropietarioIncorrecto() {
         // Arrange
         BigDecimal montoAnticipo = new BigDecimal("75.00");
-        when(reservaRepository.findByNumeroReserva(1L)).thenReturn(reserva1);
+        when(reservaRepository.findByNumeroReserva(1L)).thenReturn(Optional.of(reserva1));
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () -> 
@@ -167,7 +167,7 @@ class GestionReservaTest {
     void testConfirmarPagoActualizaMonto() {
         // Arrange
         BigDecimal montoNuevo = new BigDecimal("100.00");
-        when(reservaRepository.findByNumeroReserva(1L)).thenReturn(reserva1);
+        when(reservaRepository.findByNumeroReserva(1L)).thenReturn(Optional.of(reserva1));
         when(reservaRepository.save(any(Reserva.class))).thenReturn(reserva1);
 
         // Act
@@ -183,7 +183,7 @@ class GestionReservaTest {
     void testNoConfirmarPagoConPropietarioNoAutorizado() {
         // Arrange - reserva1 pertenece a propietario (ID=1) pero intentamos confirmar con otroPropietario (ID=2)
         BigDecimal montoAnticipo = new BigDecimal("50.00");
-        when(reservaRepository.findByNumeroReserva(1L)).thenReturn(reserva1);
+        when(reservaRepository.findByNumeroReserva(1L)).thenReturn(Optional.of(reserva1));
 
         // Act & Assert
         NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> 

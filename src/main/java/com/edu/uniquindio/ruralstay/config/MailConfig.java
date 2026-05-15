@@ -2,17 +2,35 @@ package com.edu.uniquindio.ruralstay.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import java.util.Properties;
 
 @Configuration
 public class MailConfig {
 
     @Bean
-    public JavaMailSender javaMailSender() {
-        // Bean mínimo para evitar fallos en tiempo de arranque en entornos de desarrollo.
+    public JavaMailSender javaMailSender(
+            @Value("${spring.mail.host}") String host,
+            @Value("${spring.mail.port}") int port,
+            @Value("${spring.mail.username}") String username,
+            @Value("${spring.mail.password}") String password,
+            @Value("${spring.mail.properties.mail.smtp.auth:true}") boolean auth,
+            @Value("${spring.mail.properties.mail.smtp.starttls.enable:true}") boolean starttls
+    ) {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
-        // No se configuran host/credenciales aquí; en producción usar propiedades reales.
+        sender.setHost(host);
+        sender.setPort(port);
+        sender.setUsername(username);
+        sender.setPassword(password);
+
+        Properties props = sender.getJavaMailProperties();
+        props.put("mail.smtp.auth", String.valueOf(auth));
+        props.put("mail.smtp.starttls.enable", String.valueOf(starttls));
+        props.put("mail.smtp.starttls.required", String.valueOf(starttls));
+        props.put("mail.smtp.ssl.trust", host);
         return sender;
     }
 }

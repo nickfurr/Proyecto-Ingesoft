@@ -1,6 +1,8 @@
 package com.edu.uniquindio.ruralstay.controller;
 
+import com.edu.uniquindio.ruralstay.dto.CrearReservaDTO;
 import com.edu.uniquindio.ruralstay.dto.ClienteDTO;
+import com.edu.uniquindio.ruralstay.dto.ReservaDTO;
 import com.edu.uniquindio.ruralstay.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,5 +29,11 @@ public class ClienteController {
             return ResponseEntity.ok(respuesta);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
+    }
+
+    @PostMapping("/reservas")
+    public ResponseEntity<ReservaDTO> registrarReserva(@RequestBody CrearReservaDTO solicitud) {
+        ReservaDTO respuesta = clienteService.registrarReserva(solicitud);
+        return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
     }
 }

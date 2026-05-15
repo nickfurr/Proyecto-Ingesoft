@@ -1,19 +1,14 @@
 package com.edu.uniquindio.ruralstay.service;
 
-import com.edu.uniquindio.ruralstay.entity.CasaRural;
 import com.edu.uniquindio.ruralstay.entity.Propietario;
 import com.edu.uniquindio.ruralstay.entity.Reserva;
 import com.edu.uniquindio.ruralstay.entity.enums.EstadoReserva;
-import com.edu.uniquindio.ruralstay.repository.CasaRuralRepository;
-import com.edu.uniquindio.ruralstay.repository.PropietarioRepository;
 import com.edu.uniquindio.ruralstay.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 public class GestionReserva {
@@ -27,12 +22,9 @@ public class GestionReserva {
     }
 
     public void confirmarPagoInicialReserva(Long numeroReserva, BigDecimal montoAnticipo, Propietario propietario){
-        
-        Reserva reserva = (Reserva)reservaRepository.findByNumeroReserva(numeroReserva);
 
-        if (reserva == null) {
-            throw new java.util.NoSuchElementException("No se encontró la reserva");
-        }
+        Reserva reserva = reservaRepository.findByNumeroReserva(numeroReserva)
+                .orElseThrow(() -> new java.util.NoSuchElementException("No se encontró la reserva"));
 
         if (!propietario.getId().equals(reserva.getPropietario().getId())) {
             throw new java.util.NoSuchElementException("El propietario no es el de la reserva");
@@ -46,11 +38,8 @@ public class GestionReserva {
 
     public void confirmarPagoTotalReserva(Long numeroReserva, BigDecimal monto, Propietario propietario){
 
-        Reserva reserva = (Reserva)reservaRepository.findByNumeroReserva(numeroReserva);
-
-        if (reserva == null) {
-            throw new java.util.NoSuchElementException("No se encontró la reserva");
-        }
+        Reserva reserva = reservaRepository.findByNumeroReserva(numeroReserva)
+                .orElseThrow(() -> new java.util.NoSuchElementException("No se encontró la reserva"));
 
         if (!propietario.getId().equals(reserva.getPropietario().getId())) {
             throw new java.util.NoSuchElementException("El propietario no es el de la reserva");

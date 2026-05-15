@@ -159,6 +159,72 @@
       </div>
     </div>
 
+    <div class="reserva-section">
+      <div class="reserva-card">
+        <h3 class="reserva-title">Reservar esta casa</h3>
+        <p class="reserva-subtitle">
+          Completa las fechas para registrar tu reserva y dejarla en estado pendiente de pago.
+        </p>
+
+        @if (!clienteId) {
+          <div class="alert warning">
+            Debes iniciar sesión como cliente para poder reservar.
+          </div>
+        }
+
+        @if (clienteId) {
+          <form class="reserva-form" (ngSubmit)="reservarCasa()">
+            <div class="form-grid">
+              <label class="field">
+                <span>Fecha de entrada</span>
+                <input type="date" name="fechaEntrada" [(ngModel)]="reservaForm.fechaEntrada" />
+              </label>
+
+              <label class="field">
+                <span>Fecha de salida</span>
+                <input type="date" name="fechaSalida" [(ngModel)]="reservaForm.fechaSalida" />
+              </label>
+
+              <label class="field field-full">
+                <span>Modalidad</span>
+                <select name="modalidad" [(ngModel)]="reservaForm.modalidad">
+                  <option value="CASA_ENTERA">Casa entera</option>
+                  <option value="POR_HABITACIONES">Por habitaciones</option>
+                  <option value="AMBAS">Ambas</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="reserva-resumen">
+              <div>
+                <span class="label">Cliente</span>
+                <strong>{{ clienteUsername || ('#' + clienteId) }}</strong>
+              </div>
+              <div>
+                <span class="label">Noches estimadas</span>
+                <strong>{{ nochesEstimadas }}</strong>
+              </div>
+            </div>
+
+            @if (reservaError) {
+              <div class="alert error">{{ reservaError }}</div>
+            }
+
+            @if (reservaExito) {
+              <div class="alert success">{{ reservaExito }}</div>
+            }
+
+            <button
+              type="submit"
+              class="btn-reservar"
+              [disabled]="!puedeReservar || nochesEstimadas <= 0">
+              {{ reservaEnviando ? 'Registrando...' : 'Reservar ahora' }}
+            </button>
+          </form>
+        }
+      </div>
+    </div>
+
     <!-- GALERÍA DE IMÁGENES -->
     <div class="gallery-section">
       <h3 class="gallery-title">Galería de Imágenes</h3>

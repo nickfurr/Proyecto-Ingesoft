@@ -5,6 +5,7 @@ import { CasaRuralDto } from '../models/casa-rural-dto';
 import { ReservaDto } from '../models/reserva-dto';
 import { PaqueteAlquilerDto } from '../models/paquete-alquiler-dto';
 import { HistoricoPaqueteDto } from '../models/historico-paquete-dto';
+import { CrearReservaDto } from '../models/crear-reserva-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class DashboardService {
   private apiCasas = 'http://localhost:8080/api/v1/casas';
   private apiReservas = 'http://localhost:8080/api/v1/reservas';
   private apiPaquetes = 'http://localhost:8080/api/v1/paquetes';
+  private apiClientes = 'http://localhost:8080/api/v1/clientes';
 
   obtenerCasasPorPropietario(propietarioId: number): Observable<CasaRuralDto[]> {
     return this.http.get<CasaRuralDto[]>(`${this.apiCasas}/propietario/${propietarioId}`);
@@ -77,6 +79,10 @@ export class DashboardService {
 
   actualizarReservaEstado(reservaDTO: ReservaDto): Observable<ReservaDto> {
     return this.http.post<ReservaDto>(`${this.apiReservas}/actualizar-estado`, reservaDTO);
+  }
+
+  registrarReserva(payload: CrearReservaDto): Observable<ReservaDto> {
+    return this.http.post<ReservaDto>(`${this.apiClientes}/reservas`, payload);
   }
 
   private apiUsuarios = 'http://localhost:8080/api/v1/usuarios';

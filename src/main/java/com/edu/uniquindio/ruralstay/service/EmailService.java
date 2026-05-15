@@ -51,6 +51,56 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    public void enviarReservaCreada(Usuario usuario, Reserva reserva) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        helper.setTo(usuario.getEmail());
+        helper.setSubject("Reserva creada con exito #" + reserva.getNumeroReserva());
+
+        String contenidoHtml = construirContenidoReservaCreada(usuario, reserva);
+        helper.setText(contenidoHtml, true);
+
+        mailSender.send(message);
+    }
+
+    private String construirContenidoReservaCreada(Usuario usuario, Reserva reserva) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        return String.format("""
+            <html>
+            <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+                <h2 style="color: #185fa5;">Hola %s,</h2>
+                <p>Tu reserva fue creada correctamente y quedó en estado <strong>%s</strong>.</p>
+
+                <h3>Resumen de la reserva</h3>
+                <ul>
+                    <li><strong>Número de reserva:</strong> %d</li>
+                    <li><strong>Fecha de creación:</strong> %s</li>
+                    <li><strong>Fecha de entrada:</strong> %s</li>
+                    <li><strong>Fecha de salida:</strong> %s</li>
+                    <li><strong>Número de noches:</strong> %d</li>
+                    <li><strong>Modalidad:</strong> %s</li>
+                    <li><strong>Importe total:</strong> %.2f</li>
+                </ul>
+
+                <p>El siguiente paso es completar el pago para avanzar con la reserva.</p>
+                <p style="color: #666;">Atentamente,<br>El equipo de RuralStay</p>
+            </body>
+            </html>
+            """,
+            usuario.getUsername(),
+            reserva.getEstado(),
+            reserva.getNumeroReserva(),
+            reserva.getFechaReserva().format(formatter),
+            reserva.getFechaEntrada().format(formatter),
+            reserva.getFechaEntrada().plusDays(reserva.getNumeroNoches()).format(formatter),
+            reserva.getNumeroNoches(),
+            reserva.getModalidad().name(),
+            reserva.getImporteTotal()
+        );
+    }
+
     private String construirContenidoHtml(Usuario usuario, Reserva reserva, BigDecimal montoCancelacion) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
