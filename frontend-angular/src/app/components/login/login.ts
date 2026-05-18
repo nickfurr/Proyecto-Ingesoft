@@ -17,6 +17,23 @@ export class Login {
   private loginService = inject(LoginService);
   private router = inject(Router);
 
+  private limpiarSesionPropietario(): void {
+    localStorage.removeItem('propietarioId');
+    localStorage.removeItem('propietario-username');
+    localStorage.removeItem('nombrePropietario');
+    localStorage.removeItem('propietario-telefono');
+    localStorage.removeItem('propietario-activo');
+    localStorage.removeItem('propietario-cuentaBancaria');
+  }
+
+  private limpiarSesionCliente(): void {
+    localStorage.removeItem('usuarioId');
+    localStorage.removeItem('usuario-username');
+    localStorage.removeItem('nombreUsuario');
+    localStorage.removeItem('usuario-telefono');
+    localStorage.removeItem('usuario-activo');
+  }
+
   errorMessage = '';
   description = '';
   id = 0;
@@ -28,7 +45,7 @@ export class Login {
   numeroCuentaBancaria = '';
   activo = false;
   cargando = false;
-  loginType: 'cliente' | 'propietario' = 'propietario';
+  loginType: 'cliente' | 'propietario' = 'cliente';
 
   login(): void {
     this.errorMessage = '';
@@ -58,6 +75,7 @@ export class Login {
         next: (res) => {
           this.cargando = false;
           if (res.activo) {
+            this.limpiarSesionCliente();
             localStorage.setItem('propietarioId', String(res.id));
             localStorage.setItem('propietario-username', res.username ?? '');
             localStorage.setItem('nombrePropietario', res.nombreCompleto ?? '');
@@ -65,7 +83,7 @@ export class Login {
             localStorage.setItem('propietario-activo', String(res.activo));
             localStorage.setItem('propietario-cuentaBancaria', res.numeroCuentaBancaria ?? '');
 
-            this.router.navigate(['/landing']);
+            this.router.navigate(['/dashboard-propietario']);
           } else {
             this.errorMessage = res.description || 'Tu cuenta está inactiva.';
           }
@@ -95,13 +113,14 @@ export class Login {
     this.loginService.loginCliente(data).subscribe({
       next: (res) => {
         this.cargando = false;
+        this.limpiarSesionPropietario();
         localStorage.setItem('usuarioId', String(res.id));
         localStorage.setItem('usuario-username', res.username ?? '');
         localStorage.setItem('nombreUsuario', res.username ?? '');
         localStorage.setItem('usuario-telefono', res.telefonoContacto ?? '');
         localStorage.setItem('usuario-activo', 'true');
 
-        this.router.navigate(['/landing']);
+        this.router.navigate(['/dashboard-client']);
       },
       error: (e) => {
         this.cargando = false;
@@ -116,6 +135,7 @@ export class Login {
   }
 
   // Register fields
+  regType: 'cliente' | 'propietario' = 'cliente';
   regUsername = '';
   regPassword = '';
   regConfirmPassword = '';
@@ -155,44 +175,80 @@ export class Login {
 
     this.regCargando = true;
 
-    const data: PropietarioDto = {
-      description: '',
-      id: null,
-      username: this.regUsername.trim(),
-      password: this.regPassword,
-      email: this.regEmail.trim(),
-      nombreCompleto: this.regNombreCompleto.trim() || null,
-      telefono: this.regTelefono.trim() || null,
-      numeroCuentaBancaria: this.regCuentaBancaria.trim() || null,
-      activo: null
-    };
+    if (this.regType === 'propietario') {
+      const data: PropietarioDto = {
+        description: '',
+        id: null,
+        username: this.regUsername.trim(),
+        password: this.regPassword,
+        email: this.regEmail.trim(),
+        nombreCompleto: this.regNombreCompleto.trim() || null,
+        telefono: this.regTelefono.trim() || null,
+        numeroCuentaBancaria: this.regCuentaBancaria.trim() || null,
+        activo: null
+      };
 
-    this.loginService.registrarPropietario(data).subscribe({
-      next: (res) => {
-        this.regCargando = false;
-        if (res.description === 'Registro exitoso') {
-          this.regSuccessMessage = '¡Cuenta creada exitosamente! Ya puedes iniciar sesión.';
-          this.regUsername = '';
-          this.regPassword = '';
-          this.regConfirmPassword = '';
-          this.regEmail = '';
-          this.regNombreCompleto = '';
-          this.regTelefono = '';
-          this.regCuentaBancaria = '';
-        } else {
-          this.regErrorMessage = res.description || 'No se pudo completar el registro.';
+      this.loginService.registrarPropietario(data).subscribe({
+        next: (res) => {
+          this.regCargando = false;
+          if (res.description === 'Registro exitoso' || res.id) {
+            this.regSuccessMessage = '¡Cuenta de propietario creada exitosamente! Ya puedes iniciar sesión.';
+            this.regUsername = '';
+            this.regPassword = '';
+            this.regConfirmPassword = '';
+            this.regEmail = '';
+            this.regNombreCompleto = '';
+            this.regTelefono = '';
+            this.regCuentaBancaria = '';
+          } else {
+            this.regErrorMessage = res.description || 'No se pudo completar el registro.';
+          }
+        },
+        error: (e) => {
+          this.regCargando = false;
+          if (e.status === 409) {
+            this.regErrorMessage = e.error?.description || 'El usuario o correo ya está registrado.';
+          } else {
+            this.regErrorMessage = 'Ocurrió un error al registrarse. Intenta de nuevo.';
+          }
         }
-        this.router.navigate(['/dashboard-client']);
-      },
-      error: (e) => {
-        this.regCargando = false;
-        if (e.status === 409) {
-          this.regErrorMessage = e.error?.description || 'El usuario o correo ya está registrado.';
-        } else {
-          this.regErrorMessage = 'Ocurrió un error al registrarse. Intenta de nuevo.';
+      });
+    } else {
+      const data: ClienteDto = {
+        description: '',
+        id: null,
+        username: this.regUsername.trim(),
+        email: this.regEmail.trim(),
+        password: this.regPassword,
+        telefonoContacto: this.regTelefono.trim() || null
+      };
+
+      this.loginService.registrarCliente(data).subscribe({
+        next: (res) => {
+          this.regCargando = false;
+          if (res.description === 'Registro exitoso' || res.id) {
+            this.regSuccessMessage = '¡Cuenta de cliente creada exitosamente! Ya puedes iniciar sesión.';
+            this.regUsername = '';
+            this.regPassword = '';
+            this.regConfirmPassword = '';
+            this.regEmail = '';
+            this.regTelefono = '';
+            this.regNombreCompleto = '';
+            this.regCuentaBancaria = '';
+          } else {
+            this.regErrorMessage = res.description || 'No se pudo completar el registro.';
+          }
+        },
+        error: (e) => {
+          this.regCargando = false;
+          if (e.status === 409) {
+            this.regErrorMessage = e.error?.description || 'El usuario o correo ya está registrado.';
+          } else {
+            this.regErrorMessage = 'Ocurrió un error al registrarse como cliente. Intenta de nuevo.';
+          }
         }
-      }
-    });
+      });
+    }
   }
 
 }

@@ -80,10 +80,24 @@
         </form>
       }
 
-      <!-- ====== Formulario de Registro (Propietario) ====== -->
+      <!-- ====== Formulario de Registro ====== -->
       @if (activeTab === 'register') {
         <form (ngSubmit)="registrar()">
-          <h3 class="text-center mb-4">Registro de Propietario</h3>
+          <h3 class="text-center mb-4">Registro de Usuario</h3>
+
+          <div class="mb-3">
+            <label class="form-label">Tipo de cuenta</label>
+            <div class="login-role-group">
+              <label class="role-option">
+                <input type="radio" name="regType" value="cliente" [(ngModel)]="regType" />
+                Cliente
+              </label>
+              <label class="role-option">
+                <input type="radio" name="regType" value="propietario" [(ngModel)]="regType" />
+                Propietario
+              </label>
+            </div>
+          </div>
 
           <div class="mb-3">
             <label for="regUsername" class="form-label">Nombre de usuario <span class="text-danger">*</span></label>
@@ -133,19 +147,21 @@
             />
           </div>
 
-          <div class="mb-3">
-            <label for="regNombreCompleto" class="form-label">Nombre completo</label>
-            <input
-              type="text"
-              id="regNombreCompleto"
-              class="form-control"
-              [(ngModel)]="regNombreCompleto"
-              name="regNombreCompleto"
-            />
-          </div>
+          @if (regType === 'propietario') {
+            <div class="mb-3">
+              <label for="regNombreCompleto" class="form-label">Nombre completo</label>
+              <input
+                type="text"
+                id="regNombreCompleto"
+                class="form-control"
+                [(ngModel)]="regNombreCompleto"
+                name="regNombreCompleto"
+              />
+            </div>
+          }
 
           <div class="mb-3">
-            <label for="regTelefono" class="form-label">Teléfono</label>
+            <label for="regTelefono" class="form-label">Teléfono{{ regType === 'cliente' ? ' de contacto' : '' }}</label>
             <input
               type="text"
               id="regTelefono"
@@ -155,16 +171,18 @@
             />
           </div>
 
-          <div class="mb-3">
-            <label for="regCuentaBancaria" class="form-label">Número de cuenta bancaria</label>
-            <input
-              type="text"
-              id="regCuentaBancaria"
-              class="form-control"
-              [(ngModel)]="regCuentaBancaria"
-              name="regCuentaBancaria"
-            />
-          </div>
+          @if (regType === 'propietario') {
+            <div class="mb-3">
+              <label for="regCuentaBancaria" class="form-label">Número de cuenta bancaria</label>
+              <input
+                type="text"
+                id="regCuentaBancaria"
+                class="form-control"
+                [(ngModel)]="regCuentaBancaria"
+                name="regCuentaBancaria"
+              />
+            </div>
+          }
 
           @if (regErrorMessage) {
             <div class="alert alert-danger mb-3">{{ regErrorMessage }}</div>

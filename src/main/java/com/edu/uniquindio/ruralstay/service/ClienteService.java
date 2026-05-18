@@ -99,6 +99,39 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
+    public ClienteDTO registrar(ClienteDTO solicitud) {
+        if (solicitud.getUsername() == null || solicitud.getUsername().isBlank() ||
+            solicitud.getEmail() == null || solicitud.getEmail().isBlank() ||
+            solicitud.getPassword() == null || solicitud.getPassword().isBlank()) {
+            return new ClienteDTO("Los campos requeridos no pueden estar vacíos.", 0L, null, null, null, null);
+        }
+
+        if (clienteRepository.findByUsername(solicitud.getUsername()).isPresent()) {
+            return new ClienteDTO("El nombre de usuario ya está registrado.", 0L, null, null, null, null);
+        }
+
+        if (clienteRepository.findByEmail(solicitud.getEmail()).isPresent()) {
+            return new ClienteDTO("El correo electrónico ya está registrado.", 0L, null, null, null, null);
+        }
+
+        Cliente cliente = new Cliente();
+        cliente.setUsername(solicitud.getUsername());
+        cliente.setEmail(solicitud.getEmail());
+        cliente.setPassword(solicitud.getPassword());
+        cliente.setTelefonoContacto(solicitud.getTelefonoContacto());
+
+        clienteRepository.save(cliente);
+
+        return new ClienteDTO(
+                "Registro exitoso",
+                cliente.getId(),
+                cliente.getUsername(),
+                null,
+                cliente.getEmail(),
+                cliente.getTelefonoContacto()
+        );
+    }
+
     public void eliminar(Long id) {
         clienteRepository.deleteById(id);
     }

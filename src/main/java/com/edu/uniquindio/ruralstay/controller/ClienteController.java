@@ -31,6 +31,15 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
     }
 
+    @PostMapping("/registro")
+    public ResponseEntity<ClienteDTO> registrarCliente(@RequestBody ClienteDTO solicitud) {
+        ClienteDTO respuesta = clienteService.registrar(solicitud);
+        if ("Registro exitoso".equals(respuesta.getDescription())) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(respuesta);
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(respuesta);
+    }
+
     @PostMapping("/reservas")
     public ResponseEntity<ReservaDTO> registrarReserva(@RequestBody CrearReservaDTO solicitud) {
         ReservaDTO respuesta = clienteService.registrarReserva(solicitud);
